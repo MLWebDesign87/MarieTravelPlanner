@@ -4,30 +4,24 @@
  * --------------------------------------------------------------------------
  * Seul fichier à modifier pour brancher les services (aucun backend requis).
  * Toutes ces valeurs sont PUBLIQUES par nature : elles peuvent figurer
- * dans le code client sans risque. Ne jamais placer ici de clé secrète
- * Stripe (sk_live_…) ni de clé API Brevo.
+ * dans le code client sans risque. Ne jamais placer ici de clé API Brevo
+ * ni de coordonnées bancaires (l’IBAN se saisit dans l’outil privé de Marie).
  * ==========================================================================
  */
 
 window.siteConfig = Object.freeze({
-  /**
-   * Stripe Payment Links (Dashboard Stripe › Liens de paiement › Créer).
-   * Une URL par formule, de la forme https://buy.stripe.com/xxxxxxxx
-   * Tant qu'une URL est vide, le bouton « Réserver » renvoie vers le
-   * formulaire de devis avec la formule présélectionnée.
-   */
-  stripePaymentLinks: Object.freeze({
-    weekend: "",
-    escapade: "",
-    evasion: "",
-  }),
-
   /**
    * Web3Forms (https://web3forms.com) : envoie le formulaire de devis
    * par e-mail à l'adresse associée à la clé d'accès.
    */
   web3formsAccessKey: "",
   web3formsEndpoint: "https://api.web3forms.com/submit",
+
+  /**
+   * Outil privé de Marie (devis et factures Word). Chaque e-mail de demande
+   * contient un lien vers cette page, pré-rempli avec les données du client.
+   */
+  documentsToolPath: "/outils/documents.html",
 
   /**
    * Brevo (ex-Sendinblue) : URL d'action du formulaire d'inscription

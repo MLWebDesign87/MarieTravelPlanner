@@ -13,7 +13,7 @@
  *   2. En-tête (transparent → plein)
  *   3. Menu mobile
  *   4. Lien de navigation actif
- *   5. Liens de paiement Stripe & présélection de formule
+ *   5. Présélection de la formule dans le formulaire de devis
  *   6. Validation de formulaire (générique)
  *   7. Formulaire de devis (Web3Forms)
  *   8. Newsletter (Brevo)
@@ -115,16 +115,24 @@
     if (!navToggle || !primaryNav) return;
 
     const toggleLabel = qs(".visually-hidden", navToggle);
+    // Contenu situé derrière le menu : rendu inerte quand le menu est ouvert
+    const backgroundRegions = qsa("main, footer, .skip-link");
 
     /**
      * Ouvre ou ferme le menu.
+     * Ouvert : le contenu d’arrière-plan devient inerte (ni clic ni tabulation),
+     * le focus va sur le premier lien. Fermé : tout redevient interactif.
      * @param {boolean} shouldOpen
      */
     const setMenuOpen = (shouldOpen) => {
       navToggle.setAttribute("aria-expanded", String(shouldOpen));
       primaryNav.classList.toggle("is-open", shouldOpen);
       document.body.classList.toggle("is-menu-open", shouldOpen);
+      backgroundRegions.forEach((region) => {
+        region.inert = shouldOpen;
+      });
       if (toggleLabel) toggleLabel.textContent = shouldOpen ? "Fermer le menu" : "Ouvrir le menu";
+      if (shouldOpen) qs("a", primaryNav)?.focus();
     };
 
     navToggle.addEventListener("click", () => {
@@ -178,7 +186,7 @@
   };
 
   /* ------------------------------------------------------------------------
-   * 5. Stripe Payment Links & présélection de formule
+   * 5. Présélection de la formule (boutons « Demander un devis » des cartes)
    * --------------------------------------------------------------------- */
 
   /**
@@ -192,24 +200,8 @@
     if (hasOption) formulaSelect.value = formulaName;
   };
 
-  const initPaymentLinks = () => {
-    const paymentLinks = config.stripePaymentLinks || {};
-
-    qsa("[data-payment-link]").forEach((paymentButton) => {
-      const paymentKey = paymentButton.dataset.paymentLink;
-      const paymentUrl = paymentLinks[paymentKey];
-
-      if (paymentUrl) {
-        // Paiement hébergé par Stripe : aucune donnée bancaire ne transite par le site
-        paymentButton.href = paymentUrl;
-        paymentButton.rel = "noopener";
-        paymentButton.removeAttribute("data-formula"); // pas de présélection : on quitte la page
-      } else {
-        console.warn(`[siteConfig] Lien Stripe manquant pour « ${paymentKey} » : repli sur le formulaire de devis.`);
-      }
-    });
-
-    // Tous les liens vers #devis porteurs d’une formule la présélectionnent
+  const initFormulaPreselect = () => {
+    // Pas de paiement en ligne : chaque formule mène au formulaire de devis, formule présélectionnée
     qsa("a[href='#devis'][data-formula]").forEach((quoteLink) => {
       quoteLink.addEventListener("click", () => preselectFormula(quoteLink.dataset.formula));
     });
@@ -302,6 +294,25 @@
     };
   };
 
+  /**
+   * Lien vers l’outil privé de Marie, avec la demande encodée dans le fragment
+   * (#demande=…) : le fragment n’est jamais transmis au serveur, et l’outil
+   * l’efface de la barre d’adresse après lecture.
+   * @param {Record<string, string>} payload  champs du formulaire de devis
+   * @returns {string}
+   */
+  const buildDocumentsLink = (payload) => {
+    const request = {
+      firstName: payload["Prénom"], lastName: payload["Nom"], email: payload.email, phone: payload["Téléphone"],
+      formula: payload["Formule"], travelers: payload["Voyageurs"], destination: payload["Destination"],
+      period: payload["Période"], message: payload["Message"],
+    };
+    // JSON → UTF-8 → base64url (sûr dans une URL)
+    const bytes = new TextEncoder().encode(JSON.stringify(request));
+    const base64 = btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    return `${window.location.origin}${config.documentsToolPath || "/outils/documents.html"}#demande=${base64}`;
+  };
+
   /* ------------------------------------------------------------------------
    * 7. Formulaire de devis → e-mail via Web3Forms
    * --------------------------------------------------------------------- */
@@ -338,6 +349,7 @@
       const formData = new FormData(quoteForm);
       const payload = Object.fromEntries(formData.entries());
       payload.subject = `Demande de devis — ${payload["Formule"]} — ${payload["Prénom"]} ${payload["Nom"]}`;
+      payload["Préparer le devis"] = buildDocumentsLink(payload);
       delete payload.redirect; // redirection réservée à l’envoi sans JS
 
       setButtonBusy(submitButton, true);
@@ -488,13 +500,30 @@
       /* Lecture refusée (fichier absent, économie d’énergie…) : l’image d’attente reste visible */
     });
 
-    heroVideo.load();
     heroVideo.addEventListener("playing", () => {
       qs("#heroDisc")?.classList.add("is-playing");
       videoToggle.hidden = false;
       syncToggle(false);
     }, { once: true });
-    playVideo();
+
+    // Démarrage différé : une fois la page chargée et le navigateur au repos,
+    // la vidéo ne concurrence jamais le premier affichage (l'image d'attente le couvre)
+    const startVideo = () => {
+      heroVideo.load();
+      playVideo();
+    };
+    const scheduleStart = () => {
+      if ("requestIdleCallback" in window) {
+        window.requestIdleCallback(startVideo, { timeout: 1500 });
+      } else {
+        window.setTimeout(startVideo, 300);
+      }
+    };
+    if (document.readyState === "complete") {
+      scheduleStart();
+    } else {
+      window.addEventListener("load", scheduleStart, { once: true });
+    }
 
     videoToggle.addEventListener("click", () => {
       isPausedByUser = !heroVideo.paused;
@@ -576,7 +605,7 @@
   initHeaderState();
   initMobileNav();
   initActiveNavLinks();
-  initPaymentLinks();
+  initFormulaPreselect();
   initQuoteForm();
   initNewsletterForm();
   initThankYouPage();

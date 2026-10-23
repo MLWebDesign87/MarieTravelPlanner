@@ -1,0 +1,162 @@
+/* ==========================================================================
+   Marie Dream Planner — Styles de l'outil privé « Devis et factures »
+   Chargé uniquement par /outils/documents.html, en complément de styles.css.
+   ========================================================================== */
+
+.tool {
+  max-width: 56rem;
+}
+
+.tool__intro {
+  max-width: 44rem;
+  margin-top: 1rem;
+  color: var(--color-ink-soft);
+}
+
+.tool__notice,
+.tool__warning {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius-field);
+  font-size: var(--text-sm);
+}
+
+.tool__notice {
+  background: #e7f3e9;
+  color: #1f4d29;
+}
+
+.tool__warning {
+  background: #fff1b8;
+  color: #5c4400;
+}
+
+.tool__panel {
+  margin-top: 1.5rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-white);
+}
+
+.tool__heading,
+.tool__summary {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--color-garnet);
+}
+
+.tool__summary {
+  cursor: pointer;
+}
+
+.tool__badge {
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+  background: #fff1b8;
+  color: #5c4400;
+}
+
+.tool__badge[data-state="done"] {
+  background: #e7f3e9;
+  color: #1f4d29;
+}
+
+.tool__grid {
+  display: grid;
+  gap: 1rem 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.tool__help {
+  margin-top: 0.5rem;
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
+}
+
+.tool__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.tool__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.tool__choices legend {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.tool__choices label {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tool__choices input {
+  accent-color: var(--color-garnet);
+}
+
+.tool__summary-box {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+
+.tool__table {
+  width: 100%;
+  min-width: 30rem;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.tool__table th,
+.tool__table td {
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid var(--color-line);
+  text-align: left;
+}
+
+.tool__table th {
+  font-weight: 600;
+  color: var(--color-garnet);
+}
+
+.tool__table td:nth-child(n + 2),
+.tool__table th:nth-child(n + 2) {
+  text-align: right;
+}
+
+.tool__totals {
+  margin-top: 0.875rem;
+  text-align: right;
+}
+
+/* Le masquage par l'attribut hidden doit l'emporter sur display: grid */
+.tool [hidden] {
+  display: none !important;
+}
+
+@media (min-width: 40em) {
+  .tool__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tool__wide {
+    grid-column: 1 / -1;
+  }
+}

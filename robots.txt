@@ -1,6 +1,7 @@
-# Marie Dream Planner — consignes pour les robots d'indexation
+# Marie Dream Planner — consignes pour les robots d’indexation (outil privé exclu)
 User-agent: *
 Allow: /
 Disallow: /merci.html
+Disallow: /outils/
 
 Sitemap: https://www.mariedreamplanner.fr/sitemap.xml

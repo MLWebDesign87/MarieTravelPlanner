@@ -70,13 +70,14 @@
         "@type": "ProfessionalService",
         "@id": "https://www.mariedreamplanner.fr/#business",
         "name": "Marie Dream Planner",
+        "identifier": { "@type": "PropertyValue", "propertyID": "SIRET", "value": "10629688200017" },
         "description": "Travel planner basée à Cannes : organisation de voyages sur mesure, itinéraires personnalisés et carnets de voyage.",
         "url": "https://www.mariedreamplanner.fr/",
         "logo": "https://www.mariedreamplanner.fr/assets/icons/icon-512.png",
         "image": "https://www.mariedreamplanner.fr/assets/img/og-image.jpg",
         "priceRange": "79 € – 299 €",
         "currenciesAccepted": "EUR",
-        "paymentAccepted": "Carte bancaire",
+        "paymentAccepted": "Virement bancaire",
         "address": {
           "@type": "PostalAddress",
           "addressLocality": "Cannes",
@@ -166,7 +167,12 @@
           {
             "@type": "Question",
             "name": "Comment se déroule la collaboration ?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Vous choisissez une formule et la réglez en ligne, puis nous échangeons sur vos envies, votre budget et votre rythme. Je construis ensuite votre itinéraire et vous envoie votre carnet de voyage." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Vous décrivez votre projet via le formulaire et recevez un devis personnalisé. Une fois le devis signé et l’acompte de 10 % versé par virement, nous échangeons sur vos envies, votre budget et votre rythme. Je construis ensuite votre itinéraire et vous envoie votre carnet de voyage." }
+          },
+          {
+            "@type": "Question",
+            "name": "Comment se passe le paiement ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Par virement bancaire, sur devis. Un acompte de 10 % est versé à la signature du devis ; le solde est réglé selon l’échéance indiquée sur votre devis. Aucun paiement n’est demandé sur le site." }
           }
         ]
       }
@@ -313,12 +319,12 @@
           </svg>
           <ol class="steps__list">
             <li class="step">
-              <h3 class="step__title">Vous choisissez votre formule</h3>
-              <p class="step__text">Week-end, escapade ou grand voyage&nbsp;: vous réglez en ligne, en toute sécurité.</p>
+              <h3 class="step__title">Vous demandez votre devis</h3>
+              <p class="step__text">Décrivez votre projet en quelques lignes&nbsp;: je vous envoie un devis personnalisé.</p>
             </li>
             <li class="step">
-              <h3 class="step__title">On fait connaissance</h3>
-              <p class="step__text">Nous échangeons sur vos envies, votre budget, vos dates et votre rythme de voyage.</p>
+              <h3 class="step__title">Vous validez votre devis</h3>
+              <p class="step__text">Devis signé et acompte de 10&nbsp;% par virement&nbsp;: nous faisons connaissance et c’est parti.</p>
             </li>
             <li class="step">
               <h3 class="step__title">Je construis votre itinéraire</h3>
@@ -334,7 +340,7 @@
     </section>
 
     <!-- ========================= FORMULES =========================
-         Photos libres de droits (crédits : mentions légales), servies en WebP responsive.
+         Illustrations originales (scripts/art/), servies en WebP responsive.
          La jauge indique la plage de durée couverte sur une échelle de 30 jours. -->
     <section class="section formulas" id="formules" aria-labelledby="formulasTitle">
       <div class="container">
@@ -350,7 +356,7 @@
               <picture>
                 <source type="image/webp" sizes="(min-width: 960px) 360px, 92vw"
                         srcset="assets/media/formula-weekend-640.webp 640w, assets/media/formula-weekend-960.webp 960w, assets/media/formula-weekend-1280.webp 1280w">
-                <img src="assets/media/formula-weekend-960.jpg" alt="Canal bordé d’arbres et de bateaux à Amsterdam" width="960" height="720" loading="lazy" decoding="async">
+                <img src="assets/media/formula-weekend-960.jpg" alt="Illustration : maisons à pignons le long d’un canal d’Amsterdam au coucher du soleil" width="960" height="720" loading="lazy" decoding="async">
               </picture>
             </figure>
             <div class="offer__body">
@@ -365,7 +371,7 @@
                 <li>Jusqu’à 4 voyageurs</li>
               </ul>
               <p class="offer__price"><span class="offer__amount">79&nbsp;€</span> <span class="offer__extra">+ 10&nbsp;€ par voyageur supplémentaire</span></p>
-              <a class="button button--primary offer__cta" href="#devis" data-payment-link="weekend" data-formula="Week-end">Réserver le Week-end</a>
+              <a class="button button--primary offer__cta" href="#devis" data-formula="Week-end">Demander un devis Week-end</a>
             </div>
           </article>
 
@@ -375,7 +381,7 @@
               <picture>
                 <source type="image/webp" sizes="(min-width: 960px) 360px, 92vw"
                         srcset="assets/media/formula-escapade-640.webp 640w, assets/media/formula-escapade-960.webp 960w, assets/media/formula-escapade-1280.webp 1280w">
-                <img src="assets/media/formula-escapade-960.jpg" alt="Coucher de soleil sur Manhattan et le pont de Brooklyn, vu depuis Dumbo" width="960" height="720" loading="lazy" decoding="async">
+                <img src="assets/media/formula-escapade-960.jpg" alt="Illustration : skyline de New York et pont de Brooklyn au coucher du soleil" width="960" height="720" loading="lazy" decoding="async">
               </picture>
             </figure>
             <div class="offer__body">
@@ -390,7 +396,7 @@
                 <li>Jusqu’à 4 voyageurs</li>
               </ul>
               <p class="offer__price"><span class="offer__amount">169&nbsp;€</span> <span class="offer__extra">+ 10&nbsp;€ par voyageur supplémentaire</span></p>
-              <a class="button button--sun offer__cta" href="#devis" data-payment-link="escapade" data-formula="Escapade">Réserver l’Escapade</a>
+              <a class="button button--sun offer__cta" href="#devis" data-formula="Escapade">Demander un devis Escapade</a>
             </div>
           </article>
 
@@ -400,7 +406,7 @@
               <picture>
                 <source type="image/webp" sizes="(min-width: 960px) 360px, 92vw"
                         srcset="assets/media/formula-evasion-640.webp 640w, assets/media/formula-evasion-960.webp 960w, assets/media/formula-evasion-1280.webp 1280w">
-                <img src="assets/media/formula-evasion-960.jpg" alt="Bungalows sur pilotis dans le lagon turquoise de Bora Bora" width="960" height="720" loading="lazy" decoding="async">
+                <img src="assets/media/formula-evasion-960.jpg" alt="Illustration : bungalows sur pilotis face à une montagne de Polynésie au coucher du soleil" width="960" height="720" loading="lazy" decoding="async">
               </picture>
             </figure>
             <div class="offer__body">
@@ -415,14 +421,14 @@
                 <li>Jusqu’à 4 voyageurs</li>
               </ul>
               <p class="offer__price"><span class="offer__amount">299&nbsp;€</span> <span class="offer__extra">+ 10&nbsp;€ par voyageur supplémentaire</span></p>
-              <a class="button button--primary offer__cta" href="#devis" data-payment-link="evasion" data-formula="Évasion">Réserver l’Évasion</a>
+              <a class="button button--primary offer__cta" href="#devis" data-formula="Évasion">Demander un devis Évasion</a>
             </div>
           </article>
         </div>
 
         <div class="formulas__notes">
           <p class="formulas__custom">Un EVJF, un EVG ou un projet hors formule&nbsp;? <a href="#devis" data-formula="EVJF / EVG">Demandez un devis personnalisé</a>.</p>
-          <p class="formulas__secure">Paiement sécurisé par Stripe. Le prix couvre la prestation de conseil et d’organisation&nbsp;; billets, hébergements et activités se réservent et se règlent directement auprès des prestataires. Consultez les <a href="cgv.html">conditions générales de vente</a>, notamment sur le droit de rétractation.</p>
+          <p class="formulas__secure">Paiement par virement bancaire, sur devis&nbsp;: un acompte de 10&nbsp;% à la signature, le solde selon l’échéance indiquée sur le devis. Le prix couvre la prestation de conseil et d’organisation&nbsp;; billets, hébergements et activités se réservent et se règlent directement auprès des prestataires. Consultez les <a href="cgv.html">conditions générales de vente</a>, notamment sur le droit de rétractation.</p>
         </div>
       </div>
     </section>
@@ -490,7 +496,11 @@
           </details>
           <details class="faq__item">
             <summary class="faq__question">Comment se déroule la collaboration&nbsp;?</summary>
-            <div class="faq__answer"><p>Vous choisissez une formule et la réglez en ligne, puis nous échangeons sur vos envies, votre budget et votre rythme. Je construis ensuite votre itinéraire et vous envoie votre carnet de voyage.</p></div>
+            <div class="faq__answer"><p>Vous décrivez votre projet via le formulaire et recevez un devis personnalisé. Une fois le devis signé et l’acompte de 10 % versé par virement, nous échangeons sur vos envies, votre budget et votre rythme. Je construis ensuite votre itinéraire et vous envoie votre carnet de voyage.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Comment se passe le paiement&nbsp;?</summary>
+            <div class="faq__answer"><p>Par virement bancaire, sur devis. Un acompte de 10&nbsp;% est versé à la signature du devis&nbsp;; le solde est réglé selon l’échéance indiquée sur votre devis. Aucun paiement n’est demandé sur le site.</p></div>
           </details>
         </div>
       </div>

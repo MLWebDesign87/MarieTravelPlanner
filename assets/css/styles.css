@@ -315,19 +315,37 @@ a:hover {
   height: var(--header-height);
   color: var(--color-shell);
   border-bottom: 1px solid transparent;
-  transition: background-color 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease;
+  transition: border-color 0.4s ease;
 }
 
-/* Verre dépoli une fois le hero quitté (état géré en JS) */
-.site-header[data-state="solid"],
-.is-menu-open .site-header {
+/* Verre dépoli une fois le hero quitté (état géré en JS).
+   IMPORTANT : l’effet est porté par un pseudo-élément et non par l’en-tête.
+   Un backdrop-filter sur .site-header en ferait le bloc conteneur de ses
+   descendants en position fixed : le menu mobile plein écran serait alors
+   rogné à la hauteur de l’en-tête. */
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: rgba(43, 7, 9, 0.78);
-  border-bottom-color: var(--color-line-light);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   backdrop-filter: blur(14px) saturate(140%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
+.site-header[data-state="solid"],
 .is-menu-open .site-header {
+  border-bottom-color: var(--color-line-light);
+}
+
+.site-header[data-state="solid"]::before,
+.is-menu-open .site-header::before {
+  opacity: 1;
+}
+
+.is-menu-open .site-header::before {
   background: var(--color-night);
 }
 

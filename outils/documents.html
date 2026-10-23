@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- ==========================================================
+       Outil privé de Marie : devis et factures Word pré-remplis.
+       - Non indexé (noindex + robots.txt), non lié depuis le site.
+       - Aucune donnée n'est envoyée : tout est calculé dans le navigateur.
+       - Les informations de l'entreprise (dont l'IBAN) sont enregistrées
+         uniquement dans ce navigateur (localStorage), jamais dans le code.
+       - Les données d'une demande arrivent par le lien de l'e-mail, dans la
+         partie après « # », qui n'est jamais transmise au serveur.
+       ========================================================== -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Devis et factures | Outil Marie Dream Planner</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#7e1416">
+  <link rel="icon" href="/assets/icons/favicon.ico" sizes="48x48">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/assets/css/tools.css">
+  <script src="/assets/vendor/pizzip.min.js" defer></script>
+  <script src="/assets/vendor/docxtemplater.min.js" defer></script>
+  <script src="/assets/js/documents.js" defer></script>
+</head>
+
+<body class="page-simple">
+  <a class="skip-link" href="#main">Aller au contenu</a>
+
+  <header class="site-header" id="siteHeader" data-state="solid">
+    <div class="site-header__inner container">
+      <a class="brand" href="/" aria-label="Marie Dream Planner, retour au site">
+        <img class="brand__emblem" src="/assets/img/logo-emblem-48.png" srcset="/assets/img/logo-emblem-96.png 2x" alt="" width="48" height="48">
+        <span class="brand__name">Marie Dream <span class="brand__sub">Planner</span></span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main" class="page-simple__main">
+    <div class="container tool">
+      <h1 class="page-simple__title">Devis et factures</h1>
+      <p class="tool__intro">Outil privé. Rien n’est envoyé sur Internet : les documents Word sont fabriqués dans ce navigateur, et vos informations d’entreprise y restent enregistrées.</p>
+      <p class="tool__notice" id="requestNotice" hidden>Les informations de la demande de <strong id="requestClientName"></strong> ont été reprises. Vérifiez-les et complétez l’adresse du client.</p>
+
+      <!-- ===================== 1. MES INFORMATIONS ===================== -->
+      <details class="tool__panel" id="settingsPanel">
+        <summary class="tool__summary">1. Mes informations d’entreprise <span class="tool__badge" id="settingsBadge">à compléter</span></summary>
+        <form class="tool__grid" id="settingsForm">
+          <div class="form__field tool__wide">
+            <label class="form__label" for="companyLegalName">Prénom, nom et mention EI *</label>
+            <input type="text" class="form__input" id="companyLegalName" name="companyLegalName" required placeholder="Marie Dupont EI">
+            <p class="tool__help">La mention « EI » (entrepreneur individuel) est obligatoire à côté du nom.</p>
+          </div>
+          <div class="form__field tool__wide">
+            <label class="form__label" for="companyAddress">Adresse *</label>
+            <input type="text" class="form__input" id="companyAddress" name="companyAddress" required placeholder="N°, rue, code postal, Cannes">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="companySiret">SIRET *</label>
+            <input type="text" class="form__input" id="companySiret" name="companySiret" required value="106 296 882 00017">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="companyPhone">Téléphone</label>
+            <input class="form__input" id="companyPhone" name="companyPhone" type="tel">
+          </div>
+          <div class="form__field tool__wide">
+            <label class="form__label" for="companyEmail">E-mail *</label>
+            <input class="form__input" id="companyEmail" name="companyEmail" type="email" required>
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="vatMode">TVA *</label>
+            <select class="form__input form__select" id="vatMode" name="vatMode">
+              <option value="franchise">Franchise en base (micro-entreprise)</option>
+              <option value="liable">Assujettie à la TVA</option>
+            </select>
+          </div>
+          <div class="form__field" data-show-when="liable">
+            <label class="form__label" for="vatNumber">N° de TVA intracommunautaire</label>
+            <input type="text" class="form__input" id="vatNumber" name="vatNumber" placeholder="FR…">
+          </div>
+          <div class="form__field" data-show-when="liable">
+            <label class="form__label" for="vatRate">Taux de TVA (%)</label>
+            <input class="form__input" id="vatRate" name="vatRate" type="number" min="0" max="100" step="0.1" value="20">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="bankHolder">Titulaire du compte *</label>
+            <input type="text" class="form__input" id="bankHolder" name="bankHolder" required>
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="iban">IBAN *</label>
+            <input type="text" class="form__input" id="iban" name="iban" required autocomplete="off" spellcheck="false">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="bic">BIC *</label>
+            <input type="text" class="form__input" id="bic" name="bic" required autocomplete="off" spellcheck="false">
+          </div>
+          <div class="form__field tool__wide">
+            <label class="form__label" for="mediator">Médiateur de la consommation *</label>
+            <input type="text" class="form__input" id="mediator" name="mediator" required placeholder="Nom, adresse et site internet du médiateur">
+          </div>
+          <div class="form__field tool__wide">
+            <label class="form__label" for="balanceTerms">Échéance du solde *</label>
+            <input type="text" class="form__input" id="balanceTerms" name="balanceTerms" required placeholder="Ex. : à la remise du carnet de voyage">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="quoteValidityDays">Validité des devis (jours)</label>
+            <input class="form__input" id="quoteValidityDays" name="quoteValidityDays" type="number" min="1" value="30">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="paymentDelayDays">Délai de paiement des factures (jours)</label>
+            <input class="form__input" id="paymentDelayDays" name="paymentDelayDays" type="number" min="0" value="15">
+          </div>
+          <div class="tool__actions tool__wide">
+            <button class="button button--primary" type="submit">Enregistrer dans ce navigateur</button>
+            <p class="form__status" id="settingsStatus" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </details>
+
+      <!-- ===================== 2. CLIENT ET PROJET ===================== -->
+      <section class="tool__panel" aria-labelledby="clientTitle">
+        <h2 class="tool__heading" id="clientTitle">2. Client et projet</h2>
+        <div class="tool__grid" id="projectForm">
+          <div class="form__field">
+            <label class="form__label" for="clientFirstName">Prénom *</label>
+            <input type="text" class="form__input" id="clientFirstName" required>
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="clientLastName">Nom *</label>
+            <input type="text" class="form__input" id="clientLastName" required>
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="clientEmail">E-mail</label>
+            <input class="form__input" id="clientEmail" type="email">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="clientPhone">Téléphone</label>
+            <input class="form__input" id="clientPhone" type="tel">
+          </div>
+          <div class="form__field tool__wide">
+            <label class="form__label" for="clientAddress">Adresse du client *</label>
+            <input type="text" class="form__input" id="clientAddress" required placeholder="Obligatoire sur la facture">
+          </div>
+          <div class="form__field form__field--checkbox tool__wide">
+            <input class="form__checkbox" id="clientIsBusiness" type="checkbox">
+            <label class="form__label form__label--inline" for="clientIsBusiness">Le client est un professionnel (entreprise, association…)</label>
+          </div>
+          <div class="form__field" data-show-when-business>
+            <label class="form__label" for="clientCompany">Raison sociale</label>
+            <input type="text" class="form__input" id="clientCompany">
+          </div>
+          <div class="form__field" data-show-when-business>
+            <label class="form__label" for="clientSiren">SIREN du client</label>
+            <input type="text" class="form__input" id="clientSiren" inputmode="numeric">
+          </div>
+
+          <div class="form__field">
+            <label class="form__label" for="formula">Formule *</label>
+            <select class="form__input form__select" id="formula">
+              <option value="Week-end">Week-end (79 €)</option>
+              <option value="Escapade">Escapade (169 €)</option>
+              <option value="Évasion">Évasion (299 €)</option>
+              <option value="EVJF / EVG">EVJF / EVG (sur devis)</option>
+              <option value="Autre projet">Autre projet (sur devis)</option>
+            </select>
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="travelers">Nombre de voyageurs</label>
+            <input class="form__input" id="travelers" type="number" min="1" max="50" value="2">
+          </div>
+          <div class="form__field" data-show-when-custom>
+            <label class="form__label" for="customPrice">Prix de la prestation (€) *</label>
+            <input class="form__input" id="customPrice" type="number" min="0" step="0.01">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="destination">Destination</label>
+            <input type="text" class="form__input" id="destination">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="travelPeriod">Période</label>
+            <input type="text" class="form__input" id="travelPeriod">
+          </div>
+          <div class="form__field tool__wide">
+            <label class="form__label" for="deliveryDelay">Délai de remise du carnet *</label>
+            <input type="text" class="form__input" id="deliveryDelay" required value="14 jours à compter de l’échange de cadrage">
+          </div>
+          <div class="form__field tool__wide" id="clientMessageField" hidden>
+            <label class="form__label" for="clientMessage">Message du client (pour mémoire, non repris dans les documents)</label>
+            <textarea class="form__input form__textarea" id="clientMessage" readonly></textarea>
+          </div>
+        </div>
+
+        <section class="tool__summary-box" tabindex="0" aria-label="Détail du prix, défilement horizontal" aria-live="polite">
+          <table class="tool__table">
+            <caption class="visually-hidden">Détail du prix</caption>
+            <thead><tr><th scope="col">Désignation</th><th scope="col">Qté</th><th scope="col">Prix unitaire</th><th scope="col">Montant</th></tr></thead>
+            <tbody id="linesBody"></tbody>
+          </table>
+          <p class="tool__totals">Total : <strong id="totalDisplay">—</strong> · Acompte 10 % : <strong id="depositDisplay">—</strong> · Solde : <strong id="balanceDisplay">—</strong></p>
+        </section>
+      </section>
+
+      <!-- ===================== 3. DEVIS ===================== -->
+      <section class="tool__panel" aria-labelledby="quoteTitle">
+        <h2 class="tool__heading" id="quoteTitle">3. Devis</h2>
+        <div class="tool__grid">
+          <div class="form__field">
+            <label class="form__label" for="quoteNumber">Numéro du devis</label>
+            <input type="text" class="form__input" id="quoteNumber">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="quoteDate">Date du devis</label>
+            <input class="form__input" id="quoteDate" type="date">
+          </div>
+        </div>
+        <div class="tool__actions">
+          <button class="button button--primary" type="button" id="generateQuote">Télécharger le devis (Word)</button>
+          <p class="form__status" id="quoteStatus" role="status" aria-live="polite"></p>
+        </div>
+        <p class="tool__help">À envoyer au client avec les conditions générales de vente (cgv.html enregistrée en PDF) : elles contiennent le formulaire de rétractation.</p>
+      </section>
+
+      <!-- ===================== 4. FACTURE ===================== -->
+      <section class="tool__panel" aria-labelledby="invoiceTitle">
+        <h2 class="tool__heading" id="invoiceTitle">4. Facture</h2>
+        <p class="tool__warning">À établir une fois le devis accepté. La numérotation des factures doit être <strong>chronologique et sans trou</strong> : utilisez toujours le même ordinateur et le même navigateur, et conservez chaque facture émise (registre).</p>
+        <fieldset class="tool__choices">
+          <legend class="form__label">Type de facture</legend>
+          <label><input type="radio" name="invoiceType" value="deposit" checked> Facture d’acompte (10 %)</label>
+          <label><input type="radio" name="invoiceType" value="balance"> Facture de solde</label>
+          <label><input type="radio" name="invoiceType" value="single"> Facture unique (totalité)</label>
+        </fieldset>
+        <div class="tool__grid">
+          <div class="form__field">
+            <label class="form__label" for="invoiceNumber">Numéro de facture</label>
+            <input type="text" class="form__input" id="invoiceNumber">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="invoiceDate">Date d’émission</label>
+            <input class="form__input" id="invoiceDate" type="date">
+          </div>
+          <div class="form__field" data-show-when-invoice="balance">
+            <label class="form__label" for="depositInvoiceNumber">N° de la facture d’acompte</label>
+            <input type="text" class="form__input" id="depositInvoiceNumber" placeholder="F-2026-…">
+          </div>
+          <div class="form__field">
+            <label class="form__label" for="serviceDate">Date d’exécution de la prestation</label>
+            <input type="text" class="form__input" id="serviceDate" placeholder="Ex. : remise du carnet le 12/11/2026">
+          </div>
+          <div class="form__field form__field--checkbox">
+            <input class="form__checkbox" id="isPaid" type="checkbox">
+            <label class="form__label form__label--inline" for="isPaid">Déjà payée (facture acquittée)</label>
+          </div>
+          <div class="form__field" data-show-when-paid>
+            <label class="form__label" for="paidDate">Date du paiement</label>
+            <input class="form__input" id="paidDate" type="date">
+          </div>
+        </div>
+        <div class="tool__actions">
+          <button class="button button--primary" type="button" id="generateInvoice">Télécharger la facture (Word)</button>
+          <p class="form__status" id="invoiceStatus" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
