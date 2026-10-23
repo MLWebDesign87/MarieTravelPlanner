@@ -1,0 +1,6 @@
+# Marie Dream Planner — consignes pour les robots d'indexation
+User-agent: *
+Allow: /
+Disallow: /merci.html
+
+Sitemap: https://www.mariedreamplanner.fr/sitemap.xml

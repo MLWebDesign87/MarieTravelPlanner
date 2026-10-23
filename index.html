@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- ==========================================================
+       Marie Dream Planner — Site vitrine
+       Page unique (one-page) : accueil, formules, à propos, FAQ, devis.
+       ⚠️ Remplacer https://www.mariedreamplanner.fr par le domaine final
+          (rechercher/remplacer dans tout le projet).
+       ========================================================== -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- SEO : titre (~55 car.) et description (~155 car.) -->
+  <title>Travel planner à Cannes, voyage sur mesure | Marie Dream Planner</title>
+  <meta name="description" content="Travel planner basée à Cannes, Marie organise votre voyage sur mesure : itinéraire personnalisé, transports, logements et bonnes adresses. Dès 79 €.">
+  <link rel="canonical" href="https://www.mariedreamplanner.fr/">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="Marie — Marie Dream Planner">
+  <meta name="theme-color" content="#7e1416">
+  <meta name="color-scheme" content="light">
+
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp…) -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Marie Dream Planner">
+  <meta property="og:title" content="Marie Dream Planner — Travel planner à Cannes, voyage sur mesure">
+  <meta property="og:description" content="Itinéraire personnalisé, transports, logements et bonnes adresses : votre voyage pensé rien que pour vous, dès 79 €.">
+  <meta property="og:url" content="https://www.mariedreamplanner.fr/">
+  <meta property="og:image" content="https://www.mariedreamplanner.fr/assets/img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Logo Marie Dream Planner : soleil couchant, vague et palmier">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Marie Dream Planner — Travel planner à Cannes, voyage sur mesure">
+  <meta name="twitter:description" content="Votre voyage sur mesure, organisé par une travel planner passionnée basée à Cannes. Dès 79 €.">
+  <meta name="twitter:image" content="https://www.mariedreamplanner.fr/assets/img/og-image.jpg">
+
+  <!-- Icônes & PWA -->
+  <link rel="icon" href="/assets/icons/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <!-- Performance : préchargement des polices auto-hébergées (RGPD : aucun appel à Google Fonts) -->
+  <link rel="preload" href="assets/fonts/gloock-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/poppins-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="preload" as="image" type="image/webp" fetchpriority="high" href="assets/media/hero-poster-960.webp"
+        imagesrcset="assets/media/hero-poster-640.webp 640w, assets/media/hero-poster-960.webp 960w, assets/media/hero-poster-1280.webp 1280w"
+        imagesizes="(min-width: 56.25em) min(40vw, 34rem), min(60vw, 17rem)">
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+  <!-- Données structurées (schema.org) : entreprise, offres, fondatrice, FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://www.mariedreamplanner.fr/#website",
+        "url": "https://www.mariedreamplanner.fr/",
+        "name": "Marie Dream Planner",
+        "inLanguage": "fr-FR",
+        "publisher": { "@id": "https://www.mariedreamplanner.fr/#business" },
+        "creator": { "@type": "Organization", "name": "ML Web Design" }
+      },
+      {
+        "@type": "ProfessionalService",
+        "@id": "https://www.mariedreamplanner.fr/#business",
+        "name": "Marie Dream Planner",
+        "description": "Travel planner basée à Cannes : organisation de voyages sur mesure, itinéraires personnalisés et carnets de voyage.",
+        "url": "https://www.mariedreamplanner.fr/",
+        "logo": "https://www.mariedreamplanner.fr/assets/icons/icon-512.png",
+        "image": "https://www.mariedreamplanner.fr/assets/img/og-image.jpg",
+        "priceRange": "79 € – 299 €",
+        "currenciesAccepted": "EUR",
+        "paymentAccepted": "Carte bancaire",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Cannes",
+          "addressRegion": "Provence-Alpes-Côte d’Azur",
+          "addressCountry": "FR"
+        },
+        "areaServed": [
+          { "@type": "City", "name": "Cannes" },
+          { "@type": "AdministrativeArea", "name": "Alpes-Maritimes" },
+          { "@type": "Country", "name": "France" }
+        ],
+        "knowsLanguage": "fr",
+        "founder": { "@id": "https://www.mariedreamplanner.fr/#marie" },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Formules d’organisation de voyage",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "name": "Formule Week-end",
+              "description": "Voyage de 2 à 4 jours en France ou en Europe, 1 étape, carnet de voyage PDF, jusqu’à 4 personnes.",
+              "price": "79",
+              "priceCurrency": "EUR",
+              "url": "https://www.mariedreamplanner.fr/#formules"
+            },
+            {
+              "@type": "Offer",
+              "name": "Formule Escapade",
+              "description": "Voyage de 5 à 15 jours, jusqu’à 4 étapes, carnet de voyage PDF, jusqu’à 4 personnes.",
+              "price": "169",
+              "priceCurrency": "EUR",
+              "url": "https://www.mariedreamplanner.fr/#formules"
+            },
+            {
+              "@type": "Offer",
+              "name": "Formule Évasion",
+              "description": "Voyage de 15 à 30 jours, jusqu’à 10 étapes, carnet de voyage PDF, jusqu’à 4 personnes.",
+              "price": "299",
+              "priceCurrency": "EUR",
+              "url": "https://www.mariedreamplanner.fr/#formules"
+            }
+          ]
+        }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://www.mariedreamplanner.fr/#marie",
+        "name": "Marie",
+        "jobTitle": "Travel planner",
+        "image": "https://www.mariedreamplanner.fr/assets/img/marie-travel-planner-800.jpg",
+        "worksFor": { "@id": "https://www.mariedreamplanner.fr/#business" }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://www.mariedreamplanner.fr/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Quelle est la différence entre un travel planner et une agence de voyage ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Une agence vend un voyage et réserve à votre place. En tant que travel planner, je conçois votre voyage sur mesure et vous transmets toutes les informations et liens nécessaires : vous réservez vous-même, au prix public, en gardant la main sur chaque choix." }
+          },
+          {
+            "@type": "Question",
+            "name": "Le prix de la formule comprend-il les billets et les hébergements ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Non. Le prix de la formule rémunère la recherche et l’organisation de votre voyage. Les transports, hébergements et activités restent à réserver et à régler directement auprès des prestataires, grâce aux liens fournis dans votre carnet." }
+          },
+          {
+            "@type": "Question",
+            "name": "Que contient le carnet de voyage ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Votre carnet de voyage au format PDF rassemble votre itinéraire jour par jour, les transports et logements sélectionnés, les activités et bonnes adresses, ainsi que les liens pour tout réserver." }
+          },
+          {
+            "@type": "Question",
+            "name": "Peut-on partir à plus de 4 personnes ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Oui. Chaque formule inclut jusqu’à 4 voyageurs ; chaque personne supplémentaire est facturée 10 €." }
+          },
+          {
+            "@type": "Question",
+            "name": "Organisez-vous des EVJF et des EVG ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Oui, les enterrements de vie de jeune fille et de garçon sont organisés sur devis, selon le nombre de participants, la destination et les activités souhaitées." }
+          },
+          {
+            "@type": "Question",
+            "name": "Faut-il habiter Cannes pour faire appel à vous ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Non. Je suis basée à Cannes, mais tout l’accompagnement se fait à distance : où que vous habitiez en France, vous pouvez me confier l’organisation de votre voyage." }
+          },
+          {
+            "@type": "Question",
+            "name": "Comment se déroule la collaboration ?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Vous choisissez une formule et la réglez en ligne, puis nous échangeons sur vos envies, votre budget et votre rythme. Je construis ensuite votre itinéraire et vous envoie votre carnet de voyage." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <script src="assets/js/config.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+</head>
+
+<body>
+  <!-- Lien d’évitement (accessibilité clavier / lecteurs d’écran) -->
+  <a class="skip-link" href="#main">Aller au contenu</a>
+
+  <!-- ========================= EN-TÊTE ========================= -->
+  <header class="site-header" id="siteHeader" data-state="transparent">
+    <div class="site-header__inner container">
+      <a class="brand" href="#accueil" aria-label="Marie Dream Planner, retour à l’accueil">
+        <picture>
+          <source type="image/webp" srcset="assets/img/logo-emblem-48.webp 1x, assets/img/logo-emblem-96.webp 2x">
+          <img class="brand__emblem" src="assets/img/logo-emblem-48.png" srcset="assets/img/logo-emblem-96.png 2x" alt="" width="48" height="48">
+        </picture>
+        <span class="brand__name">Marie Dream <span class="brand__sub">Planner</span></span>
+      </a>
+
+      <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="primaryNav">
+        <span class="nav-toggle__bar" aria-hidden="true"></span>
+        <span class="visually-hidden">Ouvrir le menu</span>
+      </button>
+
+      <nav class="primary-nav" id="primaryNav" aria-label="Navigation principale">
+        <ul class="primary-nav__list">
+          <li><a class="primary-nav__link" href="#travel-planner">Travel planner</a></li>
+          <li><a class="primary-nav__link" href="#formules">Formules</a></li>
+          <li><a class="primary-nav__link" href="#a-propos">À propos</a></li>
+          <li><a class="primary-nav__link" href="#faq">FAQ</a></li>
+          <li><a class="button button--sun primary-nav__cta" href="#devis">Demander un devis</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ========================= HERO =========================
+         Le soleil du logo devient une fenêtre sur le voyage : la vidéo s’affiche
+         dans un disque qui se lève sur l’horizon au chargement.
+         Vidéo muette, en boucle, avec bouton pause (WCAG 2.2.2), non chargée si
+         l’utilisateur limite les animations ou ses données (voir main.js). -->
+    <section class="hero" id="accueil" aria-labelledby="heroTitle">
+      <div class="hero__inner container">
+        <div class="hero__text">
+          <h1 class="hero__title" id="heroTitle">
+            <span class="hero__line"><span>Votre voyage</span></span>
+            <span class="hero__line"><span>sur mesure,</span></span>
+            <span class="hero__line"><span>pensé rien</span></span>
+            <span class="hero__line"><span>que pour vous</span></span>
+          </h1>
+          <p class="hero__lead">Travel planner passionnée basée à Cannes, j’imagine votre itinéraire, je sélectionne transports, logements et bonnes adresses, et je réunis tout dans un carnet de voyage. Vous n’avez plus qu’à réserver et partir l’esprit léger.</p>
+          <div class="hero__actions">
+            <a class="button button--sun" href="#formules">Découvrir les formules</a>
+            <a class="button button--ghost" href="#devis">Demander un devis</a>
+          </div>
+        </div>
+
+        <div class="hero__sun">
+          <div class="hero__disc" id="heroDisc">
+            <!-- Image d’attente responsive (affichée tant que la vidéo ne joue pas) -->
+            <picture>
+              <source type="image/webp" sizes="(min-width: 56.25em) min(40vw, 34rem), min(60vw, 17rem)"
+                      srcset="assets/media/hero-poster-640.webp 640w, assets/media/hero-poster-960.webp 960w, assets/media/hero-poster-1280.webp 1280w">
+              <img class="hero__poster" src="assets/media/hero-poster-960.jpg" alt="" width="960" height="960" fetchpriority="high" decoding="async">
+            </picture>
+            <video class="hero__video" id="heroVideo" muted loop playsinline preload="none" aria-hidden="true"
+                   data-sources='[{"src":"assets/media/hero.webm","type":"video/webm"},{"src":"assets/media/hero.mp4","type":"video/mp4"}]'>
+            </video>
+          </div>
+          <button class="hero__video-toggle" id="heroVideoToggle" type="button" data-state="playing" hidden>
+            <span class="hero__video-icon" aria-hidden="true"></span>
+            <span class="visually-hidden" data-label>Mettre la vidéo en pause</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bandeau décoratif : les continents évoqués dans la présentation de Marie -->
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee__track">
+          <span>Europe</span><span>Asie</span><span>Afrique</span><span>Amérique</span><span>Océanie</span>
+          <span>Europe</span><span>Asie</span><span>Afrique</span><span>Amérique</span><span>Océanie</span>
+          <span>Europe</span><span>Asie</span><span>Afrique</span><span>Amérique</span><span>Océanie</span>
+          <span>Europe</span><span>Asie</span><span>Afrique</span><span>Amérique</span><span>Océanie</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= QU’EST-CE QU’UN TRAVEL PLANNER ========================= -->
+    <section class="section intro" id="travel-planner" aria-labelledby="introTitle">
+      <div class="container">
+        <div class="intro__grid">
+          <div class="intro__body">
+            <h2 class="section__title" id="introTitle">Qu’est-ce qu’un travel planner&nbsp;?</h2>
+            <div class="prose">
+              <p>Un travel planner est votre partenaire pour imaginer et organiser un voyage entièrement personnalisé. À partir de vos envies, de votre budget et de votre façon de voyager, je recherche pour vous les transports, les logements, les activités et les bonnes adresses qui correspondent à votre séjour.</p>
+              <p>Je construis ensuite un itinéraire sur mesure, adapté à votre rythme, pour que vous sachiez exactement quoi faire et où aller une fois sur place.</p>
+              <p>À la différence d’une agence de voyage, je ne réserve pas à votre place&nbsp;: je vous transmets les informations et les liens nécessaires pour que vous effectuiez vous-même vos réservations.</p>
+            </div>
+          </div>
+
+          <!-- Répartition des rôles : l’information clé du métier, présentée côte à côte -->
+          <div class="roles">
+            <div class="roles__card roles__card--marie">
+              <h3 class="roles__title">Je m’occupe de</h3>
+              <ul class="roles__list">
+                <li>Chercher transports, logements et activités</li>
+                <li>Dénicher les bonnes adresses</li>
+                <li>Construire votre itinéraire jour par jour</li>
+                <li>Tout réunir dans un carnet de voyage PDF</li>
+              </ul>
+            </div>
+            <div class="roles__card roles__card--you">
+              <h3 class="roles__title">Vous gardez la main sur</h3>
+              <ul class="roles__list">
+                <li>Vos réservations, au prix public</li>
+                <li>Chaque choix, à chaque étape</li>
+                <li>Votre budget</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <p class="intro__goal">L’objectif&nbsp;: vous faire gagner du temps, vous éviter des heures de recherches et vous laisser partir l’esprit léger, avec un voyage qui vous ressemble.</p>
+      </div>
+    </section>
+
+    <!-- ========================= ÉTAPES (vraie séquence → numérotation justifiée) =========================
+         Un avion parcourt la ligne de vol quand la section entre à l’écran (une seule fois). -->
+    <section class="section steps" aria-labelledby="stepsTitle">
+      <div class="container">
+        <h2 class="section__title" id="stepsTitle">Comment ça se passe</h2>
+        <div class="steps__route" id="stepsRoute">
+          <svg class="steps__plane" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/>
+          </svg>
+          <ol class="steps__list">
+            <li class="step">
+              <h3 class="step__title">Vous choisissez votre formule</h3>
+              <p class="step__text">Week-end, escapade ou grand voyage&nbsp;: vous réglez en ligne, en toute sécurité.</p>
+            </li>
+            <li class="step">
+              <h3 class="step__title">On fait connaissance</h3>
+              <p class="step__text">Nous échangeons sur vos envies, votre budget, vos dates et votre rythme de voyage.</p>
+            </li>
+            <li class="step">
+              <h3 class="step__title">Je construis votre itinéraire</h3>
+              <p class="step__text">Transports, logements, activités, bonnes adresses&nbsp;: je sélectionne ce qui vous correspond.</p>
+            </li>
+            <li class="step">
+              <h3 class="step__title">Vous recevez votre carnet</h3>
+              <p class="step__text">Un carnet de voyage PDF avec votre programme et tous les liens pour réserver.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= FORMULES =========================
+         Photos libres de droits (crédits : mentions légales), servies en WebP responsive.
+         La jauge indique la plage de durée couverte sur une échelle de 30 jours. -->
+    <section class="section formulas" id="formules" aria-labelledby="formulasTitle">
+      <div class="container">
+        <div class="section__head">
+          <h2 class="section__title" id="formulasTitle">Les formules</h2>
+          <p class="section__lead">Choisissez selon la durée de votre séjour. Toutes comprennent la recherche des transports, des logements, des bonnes adresses, des activités locales et un itinéraire personnalisé.</p>
+        </div>
+
+        <div class="formulas__grid">
+          <!-- Formule Week-end -->
+          <article class="offer" aria-labelledby="offerWeekendTitle">
+            <figure class="offer__media">
+              <picture>
+                <source type="image/webp" sizes="(min-width: 960px) 360px, 92vw"
+                        srcset="assets/media/formula-weekend-640.webp 640w, assets/media/formula-weekend-960.webp 960w, assets/media/formula-weekend-1280.webp 1280w">
+                <img src="assets/media/formula-weekend-960.jpg" alt="Canal bordé d’arbres et de bateaux à Amsterdam" width="960" height="720" loading="lazy" decoding="async">
+              </picture>
+            </figure>
+            <div class="offer__body">
+              <h3 class="offer__title" id="offerWeekendTitle">Week-end</h3>
+              <p class="offer__duration">De 2 à 4 jours, en France ou en Europe</p>
+              <div class="offer__range offer__range--short" role="img" aria-label="Durée couverte : de 2 à 4 jours, sur une échelle de 30 jours">
+                <span class="offer__range-fill"></span>
+              </div>
+              <ul class="offer__features">
+                <li>1 étape</li>
+                <li>Carnet de voyage au format PDF</li>
+                <li>Jusqu’à 4 voyageurs</li>
+              </ul>
+              <p class="offer__price"><span class="offer__amount">79&nbsp;€</span> <span class="offer__extra">+ 10&nbsp;€ par voyageur supplémentaire</span></p>
+              <a class="button button--primary offer__cta" href="#devis" data-payment-link="weekend" data-formula="Week-end">Réserver le Week-end</a>
+            </div>
+          </article>
+
+          <!-- Formule Escapade (variante sombre pour rythmer la rangée) -->
+          <article class="offer offer--dark" aria-labelledby="offerEscapadeTitle">
+            <figure class="offer__media">
+              <picture>
+                <source type="image/webp" sizes="(min-width: 960px) 360px, 92vw"
+                        srcset="assets/media/formula-escapade-640.webp 640w, assets/media/formula-escapade-960.webp 960w, assets/media/formula-escapade-1280.webp 1280w">
+                <img src="assets/media/formula-escapade-960.jpg" alt="Coucher de soleil sur Manhattan et le pont de Brooklyn, vu depuis Dumbo" width="960" height="720" loading="lazy" decoding="async">
+              </picture>
+            </figure>
+            <div class="offer__body">
+              <h3 class="offer__title" id="offerEscapadeTitle">Escapade</h3>
+              <p class="offer__duration">De 5 à 15 jours</p>
+              <div class="offer__range offer__range--medium" role="img" aria-label="Durée couverte : de 5 à 15 jours, sur une échelle de 30 jours">
+                <span class="offer__range-fill"></span>
+              </div>
+              <ul class="offer__features">
+                <li>Jusqu’à 4 étapes</li>
+                <li>Carnet de voyage au format PDF</li>
+                <li>Jusqu’à 4 voyageurs</li>
+              </ul>
+              <p class="offer__price"><span class="offer__amount">169&nbsp;€</span> <span class="offer__extra">+ 10&nbsp;€ par voyageur supplémentaire</span></p>
+              <a class="button button--sun offer__cta" href="#devis" data-payment-link="escapade" data-formula="Escapade">Réserver l’Escapade</a>
+            </div>
+          </article>
+
+          <!-- Formule Évasion -->
+          <article class="offer" aria-labelledby="offerEvasionTitle">
+            <figure class="offer__media">
+              <picture>
+                <source type="image/webp" sizes="(min-width: 960px) 360px, 92vw"
+                        srcset="assets/media/formula-evasion-640.webp 640w, assets/media/formula-evasion-960.webp 960w, assets/media/formula-evasion-1280.webp 1280w">
+                <img src="assets/media/formula-evasion-960.jpg" alt="Bungalows sur pilotis dans le lagon turquoise de Bora Bora" width="960" height="720" loading="lazy" decoding="async">
+              </picture>
+            </figure>
+            <div class="offer__body">
+              <h3 class="offer__title" id="offerEvasionTitle">Évasion</h3>
+              <p class="offer__duration">De 15 à 30 jours</p>
+              <div class="offer__range offer__range--long" role="img" aria-label="Durée couverte : de 15 à 30 jours, sur une échelle de 30 jours">
+                <span class="offer__range-fill"></span>
+              </div>
+              <ul class="offer__features">
+                <li>Jusqu’à 10 étapes</li>
+                <li>Carnet de voyage au format PDF</li>
+                <li>Jusqu’à 4 voyageurs</li>
+              </ul>
+              <p class="offer__price"><span class="offer__amount">299&nbsp;€</span> <span class="offer__extra">+ 10&nbsp;€ par voyageur supplémentaire</span></p>
+              <a class="button button--primary offer__cta" href="#devis" data-payment-link="evasion" data-formula="Évasion">Réserver l’Évasion</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="formulas__notes">
+          <p class="formulas__custom">Un EVJF, un EVG ou un projet hors formule&nbsp;? <a href="#devis" data-formula="EVJF / EVG">Demandez un devis personnalisé</a>.</p>
+          <p class="formulas__secure">Paiement sécurisé par Stripe. Le prix couvre la prestation de conseil et d’organisation&nbsp;; billets, hébergements et activités se réservent et se règlent directement auprès des prestataires. Consultez les <a href="cgv.html">conditions générales de vente</a>, notamment sur le droit de rétractation.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= À PROPOS ========================= -->
+    <section class="section about" id="a-propos" aria-labelledby="aboutTitle">
+      <div class="container about__grid">
+        <figure class="about__portrait">
+          <picture>
+            <source type="image/webp"
+                    srcset="assets/img/marie-travel-planner-480.webp 480w,
+                            assets/img/marie-travel-planner-800.webp 800w,
+                            assets/img/marie-travel-planner-1200.webp 1200w"
+                    sizes="(min-width: 960px) 420px, 88vw">
+            <img src="assets/img/marie-travel-planner-800.jpg"
+                 alt="Marie, travel planner et fondatrice de Marie Dream Planner, en voyage devant un jardin de pins"
+                 width="800" height="1000" loading="lazy" decoding="async">
+          </picture>
+        </figure>
+
+        <div class="about__body">
+          <h2 class="section__title" id="aboutTitle">Qui suis-je&nbsp;?</h2>
+          <div class="prose">
+            <p>Je m’appelle Marie et je suis passionnée de voyage. Depuis plusieurs années, j’ai eu la chance de découvrir de nombreuses destinations à travers le monde, de l’Europe à l’Océanie, en passant par l’Asie, l’Afrique et l’Amérique.</p>
+            <p>Au fil de mes voyages, j’ai appris à organiser des séjours, à dénicher les bonnes adresses, à construire des itinéraires adaptés à chaque destination et, surtout, à profiter pleinement de chaque expérience.</p>
+            <p>Depuis Cannes, j’ai décidé de faire de cette passion mon métier&nbsp;: vous accompagner dans la création de voyages qui vous ressemblent, pensés selon vos envies, votre budget et votre façon de voyager.</p>
+            <p>J’ai hâte de partager avec vous ce que j’ai appris en chemin et de vous faire découvrir, à votre tour, les merveilles que le monde a à offrir.</p>
+          </div>
+          <p class="about__signature">Marie</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= FAQ (accordéons natifs <details>, ouverture animée en CSS) ========================= -->
+    <section class="section faq" id="faq" aria-labelledby="faqTitle">
+      <div class="container faq__grid">
+        <div class="faq__intro">
+          <h2 class="section__title" id="faqTitle">Vos questions</h2>
+          <p class="section__lead">Une autre question&nbsp;? <a href="#devis">Écrivez-moi</a>, je vous réponds personnellement.</p>
+        </div>
+        <div class="faq__list">
+          <details class="faq__item">
+            <summary class="faq__question">Quelle est la différence entre un travel planner et une agence de voyage&nbsp;?</summary>
+            <div class="faq__answer"><p>Une agence vend un voyage et réserve à votre place. En tant que travel planner, je conçois votre voyage sur mesure et vous transmets toutes les informations et liens nécessaires&nbsp;: vous réservez vous-même, au prix public, en gardant la main sur chaque choix.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Le prix de la formule comprend-il les billets et les hébergements&nbsp;?</summary>
+            <div class="faq__answer"><p>Non. Le prix de la formule rémunère la recherche et l’organisation de votre voyage. Les transports, hébergements et activités restent à réserver et à régler directement auprès des prestataires, grâce aux liens fournis dans votre carnet.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Que contient le carnet de voyage&nbsp;?</summary>
+            <div class="faq__answer"><p>Votre carnet de voyage au format PDF rassemble votre itinéraire jour par jour, les transports et logements sélectionnés, les activités et bonnes adresses, ainsi que les liens pour tout réserver.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Peut-on partir à plus de 4 personnes&nbsp;?</summary>
+            <div class="faq__answer"><p>Oui. Chaque formule inclut jusqu’à 4 voyageurs&nbsp;; chaque personne supplémentaire est facturée 10&nbsp;€.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Organisez-vous des EVJF et des EVG&nbsp;?</summary>
+            <div class="faq__answer"><p>Oui, les enterrements de vie de jeune fille et de garçon sont organisés sur devis, selon le nombre de participants, la destination et les activités souhaitées. <a href="#devis" data-formula="EVJF / EVG">Demander un devis</a>.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Faut-il habiter Cannes pour faire appel à vous&nbsp;?</summary>
+            <div class="faq__answer"><p>Non. Je suis basée à Cannes, mais tout l’accompagnement se fait à distance&nbsp;: où que vous habitiez en France, vous pouvez me confier l’organisation de votre voyage.</p></div>
+          </details>
+          <details class="faq__item">
+            <summary class="faq__question">Comment se déroule la collaboration&nbsp;?</summary>
+            <div class="faq__answer"><p>Vous choisissez une formule et la réglez en ligne, puis nous échangeons sur vos envies, votre budget et votre rythme. Je construis ensuite votre itinéraire et vous envoie votre carnet de voyage.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= DEMANDE DE DEVIS =========================
+         Envoi d’e-mail sans backend via Web3Forms (clé dans assets/js/config.js).
+         Sans JavaScript, le formulaire reste fonctionnel (POST classique + redirection). -->
+    <section class="section quote" id="devis" aria-labelledby="quoteTitle">
+      <div class="container quote__grid">
+        <div class="quote__intro">
+          <h2 class="section__title" id="quoteTitle">Demande de devis</h2>
+          <p class="section__lead">Parlez-moi de votre projet&nbsp;: destination rêvée, dates, nombre de voyageurs… Je vous réponds personnellement par e-mail.</p>
+          <p class="quote__hint">Les champs marqués d’un astérisque (*) sont obligatoires.</p>
+        </div>
+
+        <form class="form quote__form" id="quoteForm" action="https://api.web3forms.com/submit" method="POST" novalidate>
+          <!-- Champs techniques Web3Forms (valeurs injectées depuis config.js) -->
+          <input type="hidden" name="access_key" value="" data-config="web3formsAccessKey">
+          <input type="hidden" name="subject" value="Nouvelle demande de devis — Marie Dream Planner">
+          <input type="hidden" name="from_name" value="Site Marie Dream Planner">
+          <input type="hidden" name="redirect" value="https://www.mariedreamplanner.fr/merci.html?type=devis">
+          <!-- Pot de miel anti-spam : invisible pour les humains -->
+          <input type="checkbox" name="botcheck" class="form__honeypot" tabindex="-1" aria-hidden="true">
+
+          <!-- Les attributs « name » sont en français : ils deviennent les intitulés de l’e-mail reçu.
+               Les « id » restent en camelCase pour le JavaScript et les labels. -->
+          <div class="form__row">
+            <div class="form__field">
+              <label class="form__label" for="firstName">Prénom *</label>
+              <input class="form__input" id="firstName" name="Prénom" type="text" autocomplete="given-name" required aria-describedby="firstNameError">
+              <p class="form__error" id="firstNameError" aria-live="polite"></p>
+            </div>
+            <div class="form__field">
+              <label class="form__label" for="lastName">Nom *</label>
+              <input class="form__input" id="lastName" name="Nom" type="text" autocomplete="family-name" required aria-describedby="lastNameError">
+              <p class="form__error" id="lastNameError" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="form__row">
+            <div class="form__field">
+              <label class="form__label" for="email">E-mail *</label>
+              <input class="form__input" id="email" name="email" type="email" autocomplete="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,}" inputmode="email" required aria-describedby="emailError">
+              <p class="form__error" id="emailError" aria-live="polite"></p>
+            </div>
+            <div class="form__field">
+              <label class="form__label" for="phone">Téléphone <span class="form__optional">(facultatif)</span></label>
+              <input class="form__input" id="phone" name="Téléphone" type="tel" autocomplete="tel" inputmode="tel">
+            </div>
+          </div>
+
+          <div class="form__row">
+            <div class="form__field">
+              <label class="form__label" for="formula">Formule envisagée *</label>
+              <select class="form__input form__select" id="formula" name="Formule" required aria-describedby="formulaError">
+                <option value="">Choisir une formule</option>
+                <option value="Week-end">Week-end (2 à 4 jours)</option>
+                <option value="Escapade">Escapade (5 à 15 jours)</option>
+                <option value="Évasion">Évasion (15 à 30 jours)</option>
+                <option value="EVJF / EVG">EVJF / EVG</option>
+                <option value="Autre projet">Autre projet</option>
+              </select>
+              <p class="form__error" id="formulaError" aria-live="polite"></p>
+            </div>
+            <div class="form__field">
+              <label class="form__label" for="travelersCount">Nombre de voyageurs</label>
+              <input class="form__input" id="travelersCount" name="Voyageurs" type="number" min="1" max="50" inputmode="numeric" value="2">
+            </div>
+          </div>
+
+          <div class="form__row">
+            <div class="form__field">
+              <label class="form__label" for="destination">Destination envisagée</label>
+              <input class="form__input" id="destination" name="Destination" type="text" placeholder="Ex. : Japon, Portugal…">
+            </div>
+            <div class="form__field">
+              <label class="form__label" for="travelPeriod">Dates ou période</label>
+              <input class="form__input" id="travelPeriod" name="Période" type="text" placeholder="Ex. : 2 semaines en avril">
+            </div>
+          </div>
+
+          <div class="form__field">
+            <label class="form__label" for="message">Votre projet *</label>
+            <textarea class="form__input form__textarea" id="message" name="Message" rows="6" required minlength="20" aria-describedby="messageError" placeholder="Vos envies, votre budget, votre façon de voyager…"></textarea>
+            <p class="form__error" id="messageError" aria-live="polite"></p>
+          </div>
+
+          <div class="form__field form__field--checkbox">
+            <input class="form__checkbox" id="quoteConsent" name="Consentement RGPD" type="checkbox" value="Oui" required aria-describedby="quoteConsentError">
+            <label class="form__label form__label--inline" for="quoteConsent">J’accepte que mes données soient utilisées pour répondre à ma demande, conformément à la <a href="mentions-legales.html#confidentialite">politique de confidentialité</a>. *</label>
+            <p class="form__error" id="quoteConsentError" aria-live="polite"></p>
+          </div>
+
+          <button class="button button--primary form__submit" type="submit">Envoyer ma demande</button>
+          <p class="form__status" id="quoteStatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========================= PIED DE PAGE + NEWSLETTER ========================= -->
+  <footer class="site-footer">
+    <div class="container site-footer__grid">
+      <section class="newsletter" aria-labelledby="newsletterTitle">
+        <h2 class="newsletter__title" id="newsletterTitle">Inspirations voyage</h2>
+        <p class="newsletter__text">Des idées de destinations, des bonnes adresses et mes conseils d’organisation, directement dans votre boîte mail. Désinscription en un clic.</p>
+
+        <!-- Inscription newsletter via Brevo (URL du formulaire dans assets/js/config.js) -->
+        <form class="newsletter__form" id="newsletterForm" method="POST" novalidate>
+          <input type="text" name="email_address_check" value="" class="form__honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <input type="hidden" name="locale" value="fr">
+          <div class="newsletter__field">
+            <label class="visually-hidden" for="newsletterEmail">Votre adresse e-mail</label>
+            <input class="newsletter__input" id="newsletterEmail" name="EMAIL" type="email" autocomplete="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,}" placeholder="Votre adresse e-mail" required>
+            <button class="button button--sun newsletter__submit" type="submit">S’inscrire</button>
+          </div>
+          <div class="newsletter__consent">
+            <input class="form__checkbox" id="newsletterConsent" name="OPT_IN" type="checkbox" value="1" required>
+            <label for="newsletterConsent">J’accepte de recevoir la newsletter de Marie Dream Planner.</label>
+          </div>
+          <p class="newsletter__status" id="newsletterStatus" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <div class="site-footer__brand">
+        <picture>
+          <source type="image/webp" srcset="assets/img/logo-emblem-96.webp 1x, assets/img/logo-emblem-128.webp 2x">
+          <img class="site-footer__emblem" src="assets/img/logo-emblem-96.png" alt="" width="64" height="64" loading="lazy">
+        </picture>
+        <p class="site-footer__name">Marie Dream Planner</p>
+        <p class="site-footer__tagline">Travel planner à Cannes, voyages sur mesure</p>
+      </div>
+
+      <nav class="site-footer__nav" aria-label="Liens du pied de page">
+        <ul>
+          <li><a href="#formules">Formules et tarifs</a></li>
+          <li><a href="#devis">Demande de devis</a></li>
+          <li><a href="https://www.instagram.com/" rel="noopener" target="_blank">Instagram <span class="visually-hidden">(nouvel onglet)</span></a></li>
+          <li><a href="mentions-legales.html">Mentions légales</a></li>
+          <li><a href="mentions-legales.html#confidentialite">Confidentialité</a></li>
+          <li><a href="cgv.html">Conditions générales de vente</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="site-footer__bottom container">
+      <p class="site-footer__copyright">© <span id="currentYear">2026</span> Marie Dream Planner</p>
+      <!-- Crédit de conception. Pour le rendre cliquable, remplacer <p> par
+           <a class="credit" href="https://VOTRE-SITE" rel="noopener"> … </a> -->
+      <p class="credit">
+        <img class="credit__logo" src="assets/img/ml-web-design.svg" alt="" width="28" height="27" loading="lazy">
+        <span>Site conçu par <strong class="credit__name">ML Web Design</strong></span>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

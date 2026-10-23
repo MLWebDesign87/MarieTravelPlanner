@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Plan du site : seules les pages à indexer y figurent (les pages légales sont en noindex). -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://www.mariedreamplanner.fr/</loc>
+    <lastmod>2026-10-22</lastmod>
+    <image:image>
+      <image:loc>https://www.mariedreamplanner.fr/assets/img/marie-travel-planner-800.jpg</image:loc>
+    </image:image>
+  </url>
+</urlset>

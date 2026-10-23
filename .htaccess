@@ -1,0 +1,57 @@
+# ==========================================================================
+# Marie Dream Planner — Configuration Apache (OVH, o2switch, Hostinger…)
+# Inutile sur Netlify / Vercel / Cloudflare Pages (voir README).
+# ==========================================================================
+
+# --- HTTPS + domaine canonique avec www -----------------------------------
+RewriteEngine On
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteRule ^ https://www.mariedreamplanner.fr%{REQUEST_URI} [L,R=301]
+
+# /index.html → / (évite le contenu dupliqué)
+RewriteCond %{THE_REQUEST} \s/index\.html[\s?] [NC]
+RewriteRule ^index\.html$ / [L,R=301]
+
+# --- Fichiers de travail jamais servis (scripts, documentation) ----------
+RedirectMatch 404 ^/(scripts/|README\.md$)
+
+# --- Page 404 personnalisée ------------------------------------------------
+ErrorDocument 404 /404.html
+
+# --- Types MIME -------------------------------------------------------------
+AddType font/woff2 .woff2
+AddType image/webp .webp
+AddType application/manifest+json .webmanifest
+
+# --- Compression ------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript application/json application/manifest+json image/svg+xml text/plain application/xml
+</IfModule>
+
+# --- Cache navigateur ------------------------------------------------------
+# HTML : toujours revalidé. Ressources : 1 an (renommer le fichier pour forcer
+# une mise à jour, ex. styles.css?v=2 dans le HTML).
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 month"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+</IfModule>
+
+# --- En-têtes de sécurité --------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  # CSP : seuls les services réellement utilisés sont autorisés
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://*.sibforms.com; form-action 'self' https://api.web3forms.com https://*.sibforms.com; frame-ancestors 'self'; base-uri 'self'"
+</IfModule>
