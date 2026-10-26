@@ -95,9 +95,14 @@ Elle joint ensuite les CGV en PDF, qui contiennent le formulaire de rétractatio
 
 Le formulaire est envoyé par **FormSubmit** (formsubmit.co). C'est gratuit, sans inscription, et les pièces jointes sont acceptées jusqu'à 10 Mo ; le devis pèse environ 25 Ko. Les fichiers ne sont pas stockés.
 
-1. Les demandes sont envoyées **directement sur le Gmail de Marie** (mariedreamplanner@gmail.com), réglé dans `config.js` › `formEndpoint` et dans l'attribut `action` du formulaire. Ce choix est volontaire : les demandes de devis ne dépendent pas de la redirection de `contact@mariedreamplanner.fr`. L'adresse publique affichée sur le site (mentions légales, CGV, devis, données Google) est **contact@mariedreamplanner.fr**.
-2. **Activation** : après la mise en ligne, envoyer une demande de test depuis le site. FormSubmit envoie alors un e-mail d'activation à mariedreamplanner@gmail.com. Cliquer sur le lien qu'il contient ; tant que ce n'est pas fait, les demandes ne sont pas transmises. Pensez à vérifier les spams.
-3. **Masquer l'adresse** (recommandé) : l'e-mail d'activation fournit un alias aléatoire. Remplacer `https://formsubmit.co/mariedreamplanner@gmail.com` par `https://formsubmit.co/<alias>`, aux deux endroits : `config.js` et l'`action` du `<form id="quoteForm">` dans `index.html`. Les robots ne pourront plus récupérer l'adresse dans le code du formulaire. L'adresse publique contact@mariedreamplanner.fr est affichée dans les mentions légales, les CGV, les devis et les données structurées pour Google. En revanche, la section devis ne propose volontairement aucune alternative au formulaire : toutes les demandes de devis passent par lui.
+1. Les demandes sont envoyées **directement sur la boîte Gmail de Marie**, et non sur `contact@mariedreamplanner.fr`. Ce choix est volontaire : les demandes de devis ne dépendent pas de la redirection de contact@. L'adresse publique affichée sur le site (mentions légales, CGV, devis, données Google) est **contact@mariedreamplanner.fr**.
+2. **Le dépôt ne contient jamais l'adresse Gmail**, seulement l'**alias** fourni par FormSubmit. Tant que l'emplacement `VOTRE-ALIAS-FORMSUBMIT` n'est pas remplacé, le formulaire affiche « envoi non disponible ».
+3. **Activation, en local et sans committer** :
+   1. Dans `config.js` › `formEndpoint` et dans l'`action` du `<form id="quoteForm">` de `index.html`, mettre temporairement `https://formsubmit.co/` suivi de l'adresse Gmail de Marie.
+   2. Servir le site en local (`python3 -m http.server 8080`) et envoyer une demande de test.
+   3. Marie reçoit un e-mail d'activation de FormSubmit (pensez aux spams) et clique sur le lien. Cet e-mail fournit aussi un **alias aléatoire**.
+   4. Remplacer l'adresse par `https://formsubmit.co/<alias>` aux deux endroits. **Vérifier avec `git diff` que l'adresse n'apparaît plus**, puis committer.
+4. Si FormSubmit redemande une activation une fois le site en ligne, il suffit de cliquer à nouveau.
 
 L'e-mail reçu présente les champs sous forme de tableau, avec pour objet « Demande de devis — Formule — Prénom Nom ». L'adresse de la cliente y figure comme adresse de réponse : il suffit de répondre. Un champ pot de miel filtre les robots ; le captcha de FormSubmit est désactivé pour ne pas freiner les clientes.
 
@@ -210,10 +215,26 @@ Optimisations en place :
 - **HTML** : identifiants en camelCase, validé avec `html-validate` (0 erreur).
 - **Accessibilité** : lien d'évitement, focus visible, menu mobile au clavier (Échap), erreurs reliées aux champs (`aria-describedby`, `aria-invalid`), zones `aria-live`, animations désactivées si `prefers-reduced-motion`.
 
+## Publication sur GitHub : ce qui ne doit jamais être commité
+
+Le dépôt est public, et tout ce qu'il contient est lisible par n'importe qui, historique compris.
+
+- **Jamais dans le dépôt** :
+  - l'adresse Gmail de Marie (utiliser l'alias FormSubmit, voir section 3) ;
+  - son IBAN ;
+  - une clé API Brevo ;
+  - une adresse personnelle non destinée à être publiée ;
+  - tout fichier de clients ou de devis réels.
+- **IBAN** : laisser `iban` vide dans `config.js`. Les devis afficheront « à compléter » et Marie l'ajoutera dans Word avant envoi.
+- **Adresse postale** : elle est légalement obligatoire dans les mentions légales. Si Marie ne souhaite pas publier son adresse personnelle, elle peut recourir à une domiciliation d'entreprise.
+- **Déjà publiés volontairement**, sans risque : le SIRET (donnée publique du répertoire SIRENE) et contact@mariedreamplanner.fr.
+- **Avant chaque commit** : `git diff` pour relire les changements. Pour un contrôle rapide : `git grep -n -i "gmail\|iban"`.
+- **Si une donnée a déjà été poussée** : la retirer d'un fichier ne suffit pas, elle reste dans l'historique Git. Il faut réécrire l'historique (`git filter-repo`) ou recréer le dépôt, et changer la donnée si c'est possible.
+
 ## Reste à fournir par la cliente
 
 - [ ] Domaine définitif
-- [ ] Activation FormSubmit (clic dans l'e-mail reçu sur mariedreamplanner@gmail.com), puis alias ; URL Brevo
+- [ ] Activation FormSubmit en local, puis alias dans `config.js` et `index.html` ; URL Brevo
 - [ ] Informations de Marie pour le devis dans `config.js` › `quoteIssuer` (nom + EI, adresse, médiateur, échéance du solde, banque)
 - [ ] Informations légales : nom, SIRET, adresse, téléphone, hébergeur, régime de TVA
 - [ ] Médiateur de la consommation désigné
