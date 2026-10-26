@@ -1,22 +1,20 @@
 /**
- * Marie Dream Planner — Génération des modèles Word (devis et facture)
- * ---------------------------------------------------------------------
- * Produit deux fichiers .docx contenant des balises {…} remplies ensuite
- * par docxtemplater dans l'outil /outils/documents.html.
+ * Marie Dream Planner — Génération du modèle Word du devis
+ * ---------------------------------------------------------
+ * Produit assets/documents/devis.docx, dont les balises {…} sont remplies
+ * dans le navigateur du visiteur (assets/js/quote-generator.js) au moment de
+ * l'envoi du formulaire ; le devis part en pièce jointe de l'e-mail à Marie.
  *
  * Règle d'or : chaque balise est écrite dans un seul TextRun, pour que Word
  * ne la découpe pas. Si Marie modifie un modèle dans Word, elle doit retaper
  * une balise d'un seul tenant (ou la copier-coller entière).
  *
- * Mentions couvertes :
- *  - Facture : Code de commerce L441-9, CGI art. 242 nonies A (dont nature de
- *    l'opération et SIREN du client professionnel), mention « EI », franchise
- *    de TVA art. 293 B, pénalités et indemnité de 40 € pour les clients
- *    professionnels (C. com. L441-10), escompte.
- *  - Devis : identification, validité, détail du prix, acompte (et non arrhes,
- *    C. conso L214-1), modalités de paiement, droit de rétractation, médiation,
- *    acceptation des CGV et demande d'exécution anticipée (C. conso L221-25,
- *    L221-28 1°), recueillies par deux cases distinctes.
+ * Mentions couvertes : identification (dont mention « EI » et SIRET), date et
+ * validité, détail du prix, nature de l'opération, mention de TVA, acompte
+ * expressément qualifié (et non arrhes, C. conso L214-1), échéance du solde,
+ * coordonnées bancaires, droit de rétractation, médiation, acceptation des CGV
+ * et demande d'exécution anticipée (C. conso L221-25, L221-28 1°), recueillies
+ * par deux cases distinctes.
  */
 const fs = require("fs");
 const path = require("path");
@@ -26,7 +24,7 @@ const {
   PageNumber, TabStopType,
 } = require("docx");
 
-const outputDir = process.argv[2] || path.join(__dirname, "..", "..", "outils", "modeles");
+const outputDir = process.argv[2] || path.join(__dirname, "..", "..", "assets", "documents");
 fs.mkdirSync(outputDir, { recursive: true });
 
 // --- Charte -----------------------------------------------------------------
@@ -103,10 +101,7 @@ function clientBlock() {
     rows: [new TableRow({ children: [cell([
       paragraph(label("Client")),
       paragraph(run("{clientName}", { bold: true })),
-      paragraph(run("{#clientIsBusiness}")),
-      paragraph(run("{clientCompany} — SIREN : {clientSiren}")),
-      paragraph(run("{/clientIsBusiness}")),
-      paragraph(run("{clientAddress}")),
+      paragraph(run("Adresse : {clientAddress}")),
       paragraph(run("{clientEmail}{#clientPhone} — {clientPhone}{/clientPhone}")),
     ], contentWidth, { fill: color.blush })] })],
   });
@@ -204,14 +199,11 @@ const quoteDocument = buildDocument({
     paragraph(run("{vatMention}", { italics: true, color: color.soft }), { spacing: { before: 80 } }),
 
     sectionTitle("Conditions de paiement"),
-    paragraph([run("Acompte de 10 % à la signature du devis : "), run("{depositAmount}", { bold: true }), run(", par virement bancaire.")]),
+    paragraph([run("Acompte de 50 % à la signature du devis : "), run("{depositAmount}", { bold: true }), run(", par virement bancaire.")]),
     paragraph([run("Solde : "), run("{balanceAmount}", { bold: true }), run(" — {balanceTerms}.")]),
     paragraph(run("La somme versée à la signature constitue un acompte et non des arrhes (article L214-1 du Code de la consommation) : elle engage définitivement les deux parties, sous réserve du droit de rétractation ci-dessous.")),
     ...bankBlock("{quoteNumber}"),
     paragraph(run("Escompte pour paiement anticipé : néant.")),
-    paragraph(run("{#clientIsBusiness}")),
-    paragraph(run("Client professionnel : en cas de retard de paiement, pénalités au taux d'intérêt de la BCE majoré de 10 points et indemnité forfaitaire de 40 € pour frais de recouvrement (articles L441-10 et D441-5 du Code de commerce).")),
-    paragraph(run("{/clientIsBusiness}")),
 
     sectionTitle("Droit de rétractation et médiation"),
     paragraph(run("Contrat conclu à distance : vous disposez de 14 jours à compter de l'acceptation du devis pour vous rétracter, sans motif, au moyen du formulaire joint aux conditions générales de vente ou de toute déclaration dénuée d'ambiguïté. L'acompte vous est alors remboursé, déduction faite, le cas échéant, de la part de prestation déjà réalisée à votre demande expresse.")),
@@ -235,41 +227,7 @@ const quoteDocument = buildDocument({
   ],
 });
 
-// ============================================================================
-// FACTURE (acompte, solde ou unique)
-// ============================================================================
-const invoiceDocument = buildDocument({
-  footer: footer("{invoiceTitle} {invoiceNumber}"),
-  children: [
-    headerBlock("{invoiceTitle}", [
-      [label("N° "), run("{invoiceNumber}", { bold: true })],
-      [run("Date d'émission : {invoiceDate}")],
-      [run("Devis : {quoteNumber} du {quoteDate}")],
-    ]),
-    paragraph(run(""), { spacing: { after: 120 } }),
-    clientBlock(),
-
-    sectionTitle("Prestation"),
-    paragraph(run("Prestation de conseil et d'organisation de voyage sur mesure — formule {formula}.")),
-    paragraph([label("Nature de l'opération : "), run("prestation de services.")]),
-    paragraph([label("Date d'exécution de la prestation : "), run("{serviceDate}")]),
-
-    sectionTitle("Détail"),
-    linesTable(),
-    paragraph(run("{vatMention}", { italics: true, color: color.soft }), { spacing: { before: 80 } }),
-
-    sectionTitle("Règlement"),
-    paragraph(run("{#isPaid}Facture acquittée le {paidDate} par virement bancaire.{/isPaid}{^isPaid}Montant à régler par virement bancaire au plus tard le {dueDate}.{/isPaid}", { bold: true })),
-    ...bankBlock("{invoiceNumber}"),
-    paragraph(run("Escompte pour paiement anticipé : néant.")),
-    paragraph(run("{#clientIsBusiness}")),
-    paragraph(run("En cas de retard de paiement : pénalités au taux d'intérêt de la BCE majoré de 10 points et indemnité forfaitaire de 40 € pour frais de recouvrement (articles L441-10 et D441-5 du Code de commerce).")),
-    paragraph(run("{/clientIsBusiness}")),
-  ],
-});
-
 (async () => {
   fs.writeFileSync(path.join(outputDir, "devis.docx"), await Packer.toBuffer(quoteDocument));
-  fs.writeFileSync(path.join(outputDir, "facture.docx"), await Packer.toBuffer(invoiceDocument));
-  console.log("Modèles générés dans", outputDir);
+  console.log("Modèle généré :", path.join(outputDir, "devis.docx"));
 })();

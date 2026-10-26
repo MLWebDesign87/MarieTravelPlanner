@@ -15,7 +15,7 @@
  *   4. Lien de navigation actif
  *   5. Présélection de la formule dans le formulaire de devis
  *   6. Validation de formulaire (générique)
- *   7. Formulaire de devis (Web3Forms)
+ *   7. Formulaire de devis (e-mail + devis Word joint)
  *   8. Newsletter (Brevo)
  *   9. Page de remerciement
  *  10. Vidéo du hero
@@ -294,41 +294,103 @@
     };
   };
 
+  /* ------------------------------------------------------------------------
+   * 7. Formulaire de devis → e-mail à Marie, devis Word en pièce jointe
+   * ------------------------------------------------------------------------
+   * Les pièces jointes exigent un envoi classique (multipart) : le devis est
+   * généré dans le navigateur, placé dans le champ fichier caché, puis le
+   * formulaire est soumis normalement (redirection vers merci.html).
+   * --------------------------------------------------------------------- */
+
+  /** Bibliothèques du devis, chargées seulement au moment de l’envoi. */
+  const quoteScripts = ["/assets/vendor/pizzip.min.js", "/assets/vendor/docxtemplater.min.js", "/assets/js/quote-generator.js"];
+
   /**
-   * Lien vers l’outil privé de Marie, avec la demande encodée dans le fragment
-   * (#demande=…) : le fragment n’est jamais transmis au serveur, et l’outil
-   * l’efface de la barre d’adresse après lecture.
-   * @param {Record<string, string>} payload  champs du formulaire de devis
-   * @returns {string}
+   * Charge un script une seule fois.
+   * @param {string} src
+   * @returns {Promise<void>}
    */
-  const buildDocumentsLink = (payload) => {
-    const request = {
-      firstName: payload["Prénom"], lastName: payload["Nom"], email: payload.email, phone: payload["Téléphone"],
-      formula: payload["Formule"], travelers: payload["Voyageurs"], destination: payload["Destination"],
-      period: payload["Période"], message: payload["Message"],
-    };
-    // JSON → UTF-8 → base64url (sûr dans une URL)
-    const bytes = new TextEncoder().encode(JSON.stringify(request));
-    const base64 = btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-    return `${window.location.origin}${config.documentsToolPath || "/outils/documents.html"}#demande=${base64}`;
+  const loadScript = (src) => new Promise((resolve, reject) => {
+    if (qs(`script[src="${src}"][data-loaded]`)) return resolve();
+    const script = Object.assign(document.createElement("script"), { src, async: false });
+    script.addEventListener("load", () => {
+      script.dataset.loaded = "true";
+      resolve();
+    });
+    script.addEventListener("error", () => reject(new Error(`Chargement impossible : ${src}`)));
+    document.head.append(script);
+  });
+
+  /**
+   * Adapte les champs techniques au fournisseur choisi dans config.js.
+   * Par défaut, le HTML est prêt pour FormSubmit.
+   * @param {HTMLFormElement} quoteForm
+   */
+  const configureFormProvider = (quoteForm) => {
+    if (config.formEndpoint) quoteForm.action = config.formEndpoint;
+    if (config.formProvider !== "web3forms") return;
+
+    quoteForm.action = config.formEndpoint || "https://api.web3forms.com/submit";
+    const fieldNames = { subject: "subject", redirect: "redirect", honeypot: "botcheck" };
+    Object.entries(fieldNames).forEach(([role, name]) => {
+      const field = qs(`[data-role='${role}']`, quoteForm);
+      if (field) field.name = name;
+    });
+    const honeypot = qs("[data-role='honeypot']", quoteForm);
+    if (honeypot) honeypot.type = "checkbox"; // Web3Forms attend une case à cocher
+    qsa("input[name='_captcha'], input[name='_template']", quoteForm).forEach((field) => field.remove());
+    quoteForm.append(Object.assign(document.createElement("input"), {
+      type: "hidden", name: "access_key", value: config.web3formsAccessKey || "",
+    }));
   };
 
-  /* ------------------------------------------------------------------------
-   * 7. Formulaire de devis → e-mail via Web3Forms
-   * --------------------------------------------------------------------- */
+  /** Le fournisseur d’envoi est-il configuré ? */
+  const isFormProviderReady = (quoteForm) => (config.formProvider === "web3forms"
+    ? Boolean(config.web3formsAccessKey)
+    : !quoteForm.action.includes("VOTRE-ALIAS"));
+
+  /**
+   * Génère le devis et le place dans le champ fichier caché.
+   * N’échoue jamais : en cas de problème, la demande part sans pièce jointe.
+   * @param {HTMLFormElement} quoteForm
+   * @returns {Promise<boolean>} true si le devis est joint
+   */
+  const attachQuoteFile = async (quoteForm) => {
+    const fileInput = qs("#quoteAttachment", quoteForm);
+    if (!fileInput || typeof DataTransfer === "undefined") return false;
+    const read = (name) => (quoteForm.elements.namedItem(name)?.value || "").trim();
+
+    try {
+      for (const src of quoteScripts) {
+        await loadScript(src);
+      }
+      const quoteFile = await window.quoteGenerator.createQuoteFile({
+        firstName: read("Prénom"), lastName: read("Nom"), email: read("email"), phone: read("Téléphone"),
+        formula: read("Formule"), travelers: read("Voyageurs"), destination: read("Destination"), period: read("Période"),
+      });
+      const transfer = new DataTransfer();
+      transfer.items.add(quoteFile);
+      fileInput.files = transfer.files;
+      return true;
+    } catch (error) {
+      console.error("[quoteForm] Devis non généré, envoi sans pièce jointe :", error);
+      return false;
+    }
+  };
+
   const initQuoteForm = () => {
     const quoteForm = qs("#quoteForm");
     if (!quoteForm) return;
 
     const statusElement = qs("#quoteStatus");
     const submitButton = qs("button[type='submit']", quoteForm);
-    const accessKeyInput = qs("[data-config='web3formsAccessKey']", quoteForm);
+    const subjectField = qs("[data-role='subject']", quoteForm);
     const validateForm = attachValidation(quoteForm);
 
-    // Injection de la clé publique (permet aussi l’envoi sans JS une fois renseignée en dur)
-    if (accessKeyInput && config.web3formsAccessKey) {
-      accessKeyInput.value = config.web3formsAccessKey;
-    }
+    configureFormProvider(quoteForm);
+
+    // Retour arrière depuis merci.html (cache du navigateur) : bouton réactivé
+    window.addEventListener("pageshow", () => setButtonBusy(submitButton, false));
 
     quoteForm.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -339,42 +401,22 @@
         return;
       }
 
-      if (!config.web3formsAccessKey) {
-        console.warn("[siteConfig] web3formsAccessKey manquante : configurez assets/js/config.js.");
-        setStatus(statusElement, "L’envoi en ligne n’est pas encore activé. Écrivez-moi directement par e-mail en attendant.", "error");
+      if (!isFormProviderReady(quoteForm)) {
+        console.warn("[siteConfig] Envoi non configuré : renseignez formEndpoint (ou web3formsAccessKey) dans assets/js/config.js.");
+        setStatus(statusElement, "L’envoi n’est pas disponible pour le moment. Merci de réessayer un peu plus tard.", "error");
         return;
       }
 
-      // Construction du message : les « name » français deviennent les intitulés de l’e-mail
-      const formData = new FormData(quoteForm);
-      const payload = Object.fromEntries(formData.entries());
-      payload.subject = `Demande de devis — ${payload["Formule"]} — ${payload["Prénom"]} ${payload["Nom"]}`;
-      payload["Préparer le devis"] = buildDocumentsLink(payload);
-      delete payload.redirect; // redirection réservée à l’envoi sans JS
+      setButtonBusy(submitButton, true, "Envoi de votre demande…");
 
-      setButtonBusy(submitButton, true);
+      // Objet explicite pour Marie : formule et nom du client
+      const read = (name) => (quoteForm.elements.namedItem(name)?.value || "").trim();
+      if (subjectField) subjectField.value = `Demande de devis — ${read("Formule")} — ${read("Prénom")} ${read("Nom")}`;
 
-      try {
-        const response = await fetch(config.web3formsEndpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const result = await response.json();
+      await attachQuoteFile(quoteForm);
 
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || `HTTP ${response.status}`);
-        }
-
-        quoteForm.reset();
-        qsa("[data-touched]", quoteForm).forEach((field) => delete field.dataset.touched);
-        setStatus(statusElement, `Merci ${payload["Prénom"]}, votre demande est bien envoyée. Je vous réponds par e-mail très vite.`, "success");
-      } catch (error) {
-        console.error("[quoteForm] Échec de l’envoi :", error);
-        setStatus(statusElement, "L’envoi n’a pas abouti. Vérifiez votre connexion puis réessayez.", "error");
-      } finally {
-        setButtonBusy(submitButton, false);
-      }
+      // Envoi classique (multipart) : seul mode qui transporte la pièce jointe
+      HTMLFormElement.prototype.submit.call(quoteForm);
     });
   };
 
@@ -550,44 +592,170 @@
   };
 
   /* ------------------------------------------------------------------------
-   * 11. Ligne de vol des étapes : l’avion part une seule fois, à l’arrivée
-   *     de la section à l’écran (animation décrite dans styles.css)
+   * 11. Ligne de vol des étapes
+   * ------------------------------------------------------------------------
+   * L’avion fait escale à chaque étape : il décolle d’une pastille, suit un
+   * arc jusqu’à la suivante et s’y pose, puis repart. En vol, il grossit
+   * (altitude) et son ombre s’éloigne ; une traînée corail se dessine derrière
+   * lui. Chaque pastille s’allume à l’atterrissage. Déclenché une seule fois,
+   * à l’arrivée de la section à l’écran.
+   * Sans animation (préférence système) : arcs affichés, pastilles allumées.
    * --------------------------------------------------------------------- */
   const initStepsFlight = () => {
     const stepsRoute = qs("#stepsRoute");
-    const lastStep = qs(".step:last-child", stepsRoute || document);
-    if (!stepsRoute || !lastStep) return;
+    if (!stepsRoute) return;
+    const plane = qs(".steps__plane", stepsRoute);
+    const steps = qsa(".step", stepsRoute);
+    if (!plane || steps.length < 2) return;
 
-    /**
-     * Mesure le centre de la dernière pastille (coin haut-gauche de l’étape)
-     * et l’expose en variables CSS : la ligne et l’avion s’arrêtent dessus.
-     */
-    const measureFlightEnd = () => {
-      // Taille réelle de la pastille (respecte le zoom et la taille de police de l’utilisateur)
-      const dotRadius = parseFloat(getComputedStyle(lastStep, "::before").width) / 2;
+    const svgNamespace = "http://www.w3.org/2000/svg";
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const hopDuration = 2000;     // durée d’un vol entre deux étapes (ms)
+    const groundPause = 700;      // escale sur chaque pastille (ms)
+
+    // Calque SVG des trajectoires, glissé sous les pastilles
+    const flightLayer = document.createElementNS(svgNamespace, "svg");
+    flightLayer.classList.add("steps__flight");
+    flightLayer.setAttribute("aria-hidden", "true");
+    flightLayer.setAttribute("focusable", "false");
+    stepsRoute.prepend(flightLayer);
+    stepsRoute.classList.add("has-flight-path");
+
+    /** @type {{trail: SVGPathElement, length: number}[]} */
+    let hops = [];
+    const trailProgress = new Array(steps.length - 1).fill(0); // 0 → 1 par vol
+    let planeState = null;  // { hopIndex, progress } pendant le vol
+
+    const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+    /** Centre de chaque pastille, relatif à la route (la pastille est en haut à gauche de l’étape). */
+    const dotCenters = () => {
       const routeBox = stepsRoute.getBoundingClientRect();
-      const stepBox = lastStep.getBoundingClientRect();
-      stepsRoute.style.setProperty("--flight-end-x", `${stepBox.left - routeBox.left + dotRadius}px`);
-      stepsRoute.style.setProperty("--flight-end-y", `${stepBox.top - routeBox.top + dotRadius}px`);
+      return steps.map((step) => {
+        const stepBox = step.getBoundingClientRect();
+        const radius = parseFloat(getComputedStyle(step, "::before").width) / 2;
+        return { x: stepBox.left - routeBox.left + radius, y: stepBox.top - routeBox.top + radius };
+      });
     };
 
-    // Mesure différée à l’arrivée de la section : aucun recalcul de mise en page au chargement
+    const createPath = (pathData, className) => {
+      const path = document.createElementNS(svgNamespace, "path");
+      path.setAttribute("d", pathData);
+      path.setAttribute("class", className);
+      flightLayer.append(path);
+      return path;
+    };
+
+    /** Affiche la portion parcourue de la traînée d’un vol. */
+    const drawTrail = (hopIndex) => {
+      const hop = hops[hopIndex];
+      if (hop) hop.trail.style.strokeDashoffset = String(hop.length * (1 - trailProgress[hopIndex]));
+    };
+
+    /**
+     * Trace un arc par vol : vers le haut sur bureau (étapes en ligne),
+     * vers la gauche sur mobile (étapes en colonne, le texte est à droite).
+     */
+    const buildFlightPaths = () => {
+      const centers = dotCenters();
+      flightLayer.replaceChildren();
+      hops = centers.slice(0, -1).map((from, index) => {
+        const to = centers[index + 1];
+        const distance = Math.hypot(to.x - from.x, to.y - from.y);
+        const isVertical = Math.abs(to.y - from.y) > Math.abs(to.x - from.x);
+        const bulge = isVertical ? Math.min(34, distance * 0.22) : Math.min(70, distance * 0.32);
+        const control = isVertical
+          ? { x: (from.x + to.x) / 2 - bulge, y: (from.y + to.y) / 2 }
+          : { x: (from.x + to.x) / 2, y: Math.min(from.y, to.y) - bulge };
+        const pathData = `M${from.x} ${from.y} Q${control.x} ${control.y} ${to.x} ${to.y}`;
+
+        createPath(pathData, "steps__flight-dash");
+        const trail = createPath(pathData, "steps__flight-trail");
+        const length = trail.getTotalLength();
+        trail.style.strokeDasharray = String(length);
+        return { trail, length };
+      });
+      hops.forEach((hop, index) => drawTrail(index));
+      if (planeState) placePlane(planeState.hopIndex, planeState.progress);
+    };
+
+    /**
+     * Place l’avion sur un vol : position sur l’arc, cap (tangente),
+     * altitude (échelle) et ombre portée.
+     * @param {number} hopIndex
+     * @param {number} progress  0 = décollage, 1 = atterrissage
+     */
+    const placePlane = (hopIndex, progress) => {
+      const { trail, length } = hops[hopIndex];
+      const distance = length * progress;
+      const point = trail.getPointAtLength(distance);
+      const ahead = trail.getPointAtLength(Math.min(length, distance + 1));
+      const behind = trail.getPointAtLength(Math.max(0, distance - 1));
+      const heading = (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI + 90; // icône orientée vers le haut
+      const altitude = Math.sin(Math.PI * progress);
+      const scale = 0.72 + 0.5 * altitude;
+
+      planeState = { hopIndex, progress };
+      plane.style.transform = `translate(${point.x}px, ${point.y}px) translate(-50%, -50%) rotate(${heading}deg) scale(${scale})`;
+      plane.style.filter = `drop-shadow(0 ${(2 + 9 * altitude).toFixed(1)}px ${(2 + 4 * altitude).toFixed(1)}px rgba(43, 7, 9, ${(0.35 - 0.17 * altitude).toFixed(2)}))`;
+    };
+
+    /** Un vol complet entre deux étapes. */
+    const flyHop = (hopIndex) => new Promise((resolve) => {
+      const startTime = performance.now();
+      const renderFrame = (now) => {
+        const linearProgress = Math.min(1, (now - startTime) / hopDuration);
+        const progress = easeInOutCubic(linearProgress); // accélère au décollage, freine à l’approche
+        trailProgress[hopIndex] = progress;
+        drawTrail(hopIndex);
+        placePlane(hopIndex, progress);
+        if (linearProgress < 1) {
+          requestAnimationFrame(renderFrame);
+        } else {
+          resolve();
+        }
+      };
+      requestAnimationFrame(renderFrame);
+    });
+
+    const reachStep = (step) => step.classList.add("is-reached");
+
+    /** Le voyage complet : escale sur chaque étape, puis l’avion s’efface. */
+    const startJourney = async () => {
+      reachStep(steps[0]);
+      placePlane(0, 0);
+      plane.classList.add("is-visible");
+      await wait(700); // l’avion attend au sol avant le premier décollage
+      for (let hopIndex = 0; hopIndex < hops.length; hopIndex += 1) {
+        await flyHop(hopIndex);
+        reachStep(steps[hopIndex + 1]);
+        if (hopIndex < hops.length - 1) await wait(groundPause);
+      }
+      await wait(1000);
+      plane.classList.remove("is-visible"); // le numéro de la dernière étape redevient lisible
+      planeState = null;
+    };
+
+    buildFlightPaths();
+
+    // Recalcul des arcs si la mise en page change (rotation d’écran, redimensionnement)
     let resizeFrame = 0;
     window.addEventListener("resize", () => {
       cancelAnimationFrame(resizeFrame);
-      resizeFrame = requestAnimationFrame(measureFlightEnd);
+      resizeFrame = requestAnimationFrame(buildFlightPaths);
     });
 
-    if (!("IntersectionObserver" in window)) {
-      measureFlightEnd();
+    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+      steps.forEach(reachStep);
       return;
     }
 
     const flightObserver = new IntersectionObserver(([routeEntry]) => {
       if (!routeEntry.isIntersecting) return;
-      measureFlightEnd();
-      stepsRoute.classList.add("is-flying");
       flightObserver.disconnect();
+      buildFlightPaths(); // mesures à jour (polices chargées, mise en page stable)
+      startJourney();
     }, { threshold: 0.45 });
 
     flightObserver.observe(stepsRoute);

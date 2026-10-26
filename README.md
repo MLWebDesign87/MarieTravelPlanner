@@ -8,8 +8,6 @@ Paiement, devis et newsletter passent par des services tiers configurables dans 
 ```
 ├── index.html               Page unique : hero, travel planner, étapes, formules, à propos, FAQ, devis
 ├── merci.html               Confirmation après l'envoi d'une demande de devis
-├── outils/documents.html    Outil privé de Marie : devis et factures Word (non indexé)
-├── outils/modeles/          Modèles Word devis.docx et facture.docx
 ├── mentions-legales.html    Mentions légales, confidentialité, cookies  ← à compléter
 ├── cgv.html                 Trame de CGV                                ← à compléter et faire valider
 ├── 404.html                 Page introuvable
@@ -17,14 +15,17 @@ Paiement, devis et newsletter passent par des services tiers configurables dans 
 ├── .htaccess                HTTPS, www, cache, compression, sécurité (hébergement Apache)
 └── assets/
     ├── css/styles.css       Styles (BEM, design tokens en variables CSS)
-    ├── js/config.js         ← SEUL fichier de configuration des services
+    ├── js/config.js         ← SEUL fichier de configuration (envoi, infos du devis, newsletter)
+    ├── js/quote-generator.js  Génération du devis Word (chargé à l'envoi du formulaire)
+    ├── documents/devis.docx Modèle Word du devis (balises {…})
+    ├── vendor/              PizZip + docxtemplater (MIT), chargés à l'envoi uniquement
     ├── js/main.js           Navigation, validation, envois (camelCase, commenté)
     ├── fonts/               Gloock + Poppins auto-hébergées (woff2, sous-ensemble latin)
     ├── img/                 Logos (Marie Dream Planner, ML Web Design en SVG), portrait, image de partage
     ├── media/               Illustrations des formules + animation du hero (créations originales)
     └── icons/               Favicons et icônes PWA
 scripts/                     Outils de production (non déployés, bloqués par .htaccess)
-├── documents/               Générateur des modèles Word (build-templates.js)
+├── documents/               Générateur du modèle Word du devis (build-templates.js)
 ├── art/                     Générateurs des illustrations et de l'animation (build-art.sh)
 └── fetch-media.sh           Option : remplacer par des photos/vidéo libres de droits
 ```
@@ -58,43 +59,49 @@ pip install playwright pillow && playwright install chromium   # une seule fois
 
 Rechercher/remplacer `https://www.mariedreamplanner.fr` dans tout le projet (balises canonical, Open Graph, JSON-LD, sitemap, robots, .htaccess, redirection du formulaire).
 
-## 2. Paiement par virement et outil devis / factures
+## 2. Paiement par virement et devis Word automatique
 
-**Il n'y a pas de paiement en ligne.** Le parcours est le suivant :
-1. La cliente remplit le formulaire de devis.
-2. Marie envoie un devis.
-3. La cliente le signe et verse un acompte de 10 % par virement.
-4. Le solde est réglé selon l'échéance indiquée sur le devis.
+**Il n'y a pas de paiement en ligne.** Le parcours :
+1. La cliente envoie le formulaire de devis.
+2. **Marie reçoit l'e-mail de la demande avec le devis Word pré-rempli en pièce jointe.**
+3. Elle le vérifie, le complète si besoin, puis l'envoie à la cliente.
+4. La cliente le signe et verse un acompte de 50 % par virement.
+5. Le solde est réglé selon l'échéance indiquée sur le devis.
 
-L'outil privé `/outils/documents.html` produit les documents Word correspondants.
+**Ce que contient le devis généré** :
+- le nom, l'e-mail et le téléphone de la cliente, la formule, le nombre de voyageurs, la destination et la période ;
+- le prix calculé : formule plus 10 € par voyageur au-delà de 4, acompte de 50 % et solde de 50 %, en centimes pour éviter toute erreur d'arrondi ;
+- un numéro unique (D-AAAAMMJJ-HHMM-INITIALES), la date et la validité ;
+- toutes les mentions légales : mention EI, SIRET, nature de l'opération, TVA, acompte qualifié comme tel (non des arrhes, article L214-1 du Code de la consommation), rétractation, médiateur, et deux cases distinctes pour l'acceptation des CGV et la demande d'exécution anticipée.
 
-**Utilisation**
-1. **Une seule fois** : ouvrir l'outil et remplir « Mes informations d'entreprise » : nom avec la mention EI, adresse, IBAN, médiateur, échéance du solde… Ces informations sont enregistrées dans le navigateur de Marie uniquement, jamais dans le code du site : l'IBAN n'est donc pas publié.
-2. **À chaque demande**, l'e-mail reçu contient un champ « Préparer le devis ». Le lien ouvre l'outil pré-rempli avec le nom, l'e-mail, la formule, le nombre de voyageurs, la destination et la période. Il reste à compléter l'adresse du client, puis à cliquer sur « Télécharger le devis (Word) ».
-3. **Envoyer le devis** avec `cgv.html` enregistrée en PDF, puisque les CGV contiennent le formulaire de rétractation.
-4. **Devis signé reçu** : envoyer l'e-mail de confirmation (modèle en section 7), puis générer la facture d'acompte à réception du virement, et plus tard la facture de solde, qui déduit automatiquement l'acompte.
+**Avant d'envoyer le devis à la cliente**, Marie complète dans Word les mentions « à compléter » :
+- l'adresse de la cliente ;
+- le prix, pour un EVJF / EVG ou un projet sur mesure ;
+- l'IBAN, si elle préfère ne pas le publier dans `config.js`.
 
-**Calculs** : la formule, 10 € par voyageur au-delà de 4, l'acompte de 10 % et le solde de 90 % sont calculés en centimes, donc sans erreur d'arrondi. La TVA est gérée selon le régime choisi : franchise (mention art. 293 B) ou assujettie (HT, TVA, TTC). Si les tarifs changent, mettre à jour `formulaPrices` dans `assets/js/documents.js`, en même temps que la page d'accueil et les CGV.
+Elle joint ensuite les CGV en PDF, qui contiennent le formulaire de rétractation.
 
-**Numérotation** : le format est D-AAAA-NNN pour les devis et F-AAAA-NNN pour les factures, et elle repart à 1 chaque année. Une facture doit être numérotée de façon chronologique et sans trou. Il faut donc toujours utiliser le même ordinateur et le même navigateur, et conserver chaque facture émise. Le numéro reste modifiable en cas de besoin.
+**Informations de Marie sur le devis** : elles se règlent dans `config.js` › `quoteIssuer` (nom avec mention EI, adresse, e-mail, médiateur, échéance du solde, délai, validité, banque). Ce fichier est public : n'y mettre l'IBAN que si Marie accepte qu'il soit lisible dans le code du site. Si le champ reste vide, le devis affiche « à compléter ».
 
-**Confidentialité** : les données de la demande voyagent dans la partie de l'adresse après `#`, qui n'est jamais envoyée au serveur. L'outil efface cette partie de la barre d'adresse après lecture. Rien n'est transmis sur Internet : les fichiers Word sont fabriqués dans le navigateur, avec PizZip et docxtemplater (licence MIT, `assets/vendor/`).
+**Tarifs** : ils figurent dans `assets/js/quote-generator.js` (`formulaPrices`). En cas de changement, mettre à jour aussi la page d'accueil et les CGV.
 
-**Mentions légales couvertes par les modèles**
-- **Devis** : identification avec la mention EI, validité, détail du prix, nature de l'opération, acompte expressément qualifié (non des arrhes, article L214-1 du Code de la consommation), échéance du solde, IBAN, rétractation, médiateur, et deux cases distinctes pour l'acceptation des CGV et la demande d'exécution anticipée.
-- **Facture** : numéro, dates d'émission et d'exécution, nature de l'opération, SIREN du client s'il est professionnel, mention TVA, échéance ou date d'acquittement, escompte, et pénalités plus indemnité de 40 € pour les clients professionnels uniquement.
+**Robustesse** : si la génération du devis échoue (navigateur très ancien, réseau…), la demande part quand même, sans pièce jointe. Aucun prospect n'est perdu. Sans JavaScript, le formulaire s'envoie normalement, également sans devis.
 
-**Personnaliser les modèles** : on peut ouvrir `outils/modeles/devis.docx` ou `facture.docx` dans Word et modifier la mise en page librement. Les balises entre accolades (`{clientName}`, `{#lines}`…) doivent rester d'un seul tenant : il faut les retaper ou les coller entières, jamais les modifier caractère par caractère. Pour repartir des modèles d'origine, lancer `npm install docx`, puis `node scripts/documents/build-templates.js`.
+**Personnaliser le modèle** : on peut ouvrir `assets/documents/devis.docx` dans Word et modifier la mise en page librement. Les balises entre accolades (`{clientName}`, `{#lines}`…) doivent rester d'un seul tenant : il faut les retaper ou les coller entières. Pour repartir du modèle d'origine : `npm install docx` puis `node scripts/documents/build-templates.js`.
 
-**Facturation électronique** : pour des clients particuliers, les factures Word ou PDF restent valables. Pour des clients professionnels, l'émission de factures électroniques via une plateforme agréée deviendra obligatoire pour les micro-entreprises selon le calendrier de la réforme (annoncé pour septembre 2027). Il faudra alors passer par une plateforme agréée.
+**Factures** : elles restent obligatoires pour chaque paiement. Marie les établit avec son outil habituel : tableur, logiciel de facturation, ou l'espace gratuit de son organisme. La numérotation doit être chronologique et sans trou.
 
-## 3. Demande de devis — Web3Forms
+## 3. Envoi du formulaire — FormSubmit (gratuit, avec pièce jointe)
 
-1. Créer une clé d'accès sur https://web3forms.com avec l'adresse e-mail de Marie.
-2. La coller dans `config.js` › `web3formsAccessKey`.
-3. Optionnel (fonctionnement sans JavaScript) : la coller aussi dans l'attribut `value` du champ caché `access_key` de `index.html`.
+Le formulaire est envoyé par **FormSubmit** (formsubmit.co). C'est gratuit, sans inscription, et les pièces jointes sont acceptées jusqu'à 10 Mo ; le devis pèse environ 25 Ko. Les fichiers ne sont pas stockés.
 
-Les attributs `name` des champs sont en français : ce sont eux qui servent d'intitulés dans l'e-mail reçu. L'objet de l'e-mail est généré automatiquement (« Demande de devis — Escapade — Julie Martin »). Un champ pot de miel (`botcheck`) filtre les robots.
+1. Les demandes sont envoyées **directement sur le Gmail de Marie** (mariedreamplanner@gmail.com), réglé dans `config.js` › `formEndpoint` et dans l'attribut `action` du formulaire. Ce choix est volontaire : les demandes de devis ne dépendent pas de la redirection de `contact@mariedreamplanner.fr`. L'adresse publique affichée sur le site (mentions légales, CGV, devis, données Google) est **contact@mariedreamplanner.fr**.
+2. **Activation** : après la mise en ligne, envoyer une demande de test depuis le site. FormSubmit envoie alors un e-mail d'activation à mariedreamplanner@gmail.com. Cliquer sur le lien qu'il contient ; tant que ce n'est pas fait, les demandes ne sont pas transmises. Pensez à vérifier les spams.
+3. **Masquer l'adresse** (recommandé) : l'e-mail d'activation fournit un alias aléatoire. Remplacer `https://formsubmit.co/mariedreamplanner@gmail.com` par `https://formsubmit.co/<alias>`, aux deux endroits : `config.js` et l'`action` du `<form id="quoteForm">` dans `index.html`. Les robots ne pourront plus récupérer l'adresse dans le code du formulaire. L'adresse publique contact@mariedreamplanner.fr est affichée dans les mentions légales, les CGV, les devis et les données structurées pour Google. En revanche, la section devis ne propose volontairement aucune alternative au formulaire : toutes les demandes de devis passent par lui.
+
+L'e-mail reçu présente les champs sous forme de tableau, avec pour objet « Demande de devis — Formule — Prénom Nom ». L'adresse de la cliente y figure comme adresse de réponse : il suffit de répondre. Un champ pot de miel filtre les robots ; le captcha de FormSubmit est désactivé pour ne pas freiner les clientes.
+
+**Alternative** : Web3Forms reste disponible (`formProvider: "web3forms"` + `web3formsAccessKey`), mais les pièces jointes y sont réservées à l'offre Pro, payante.
 
 ## 4. Newsletter — Brevo
 
@@ -106,7 +113,7 @@ Le formulaire envoie `EMAIL`, `OPT_IN`, `locale` et le pot de miel `email_addres
 
 ## 5. Déploiement
 
-- **Apache (OVH, o2switch, Hostinger…)** : envoyer le dossier tel quel. Le `.htaccess` force HTTPS et `www`, gère la 404, le cache, la compression et les en-têtes de sécurité (CSP limitée à Web3Forms et Brevo). Si vous ajoutez un service (analytics…), complétez la CSP.
+- **Apache (OVH, o2switch, Hostinger…)** : envoyer le dossier tel quel. Le `.htaccess` force HTTPS et `www`, gère la 404, le cache, la compression et les en-têtes de sécurité (CSP limitée à FormSubmit, Web3Forms et Brevo). Si vous ajoutez un service (analytics…), complétez la CSP.
 - **Netlify / Cloudflare Pages / Vercel** : glisser-déposer le dossier. Le `.htaccess` est ignoré ; reporter si besoin les en-têtes dans un fichier `_headers`.
 
 Pour forcer la mise à jour des CSS/JS mis en cache un an, versionner leur URL dans le HTML (`styles.css?v=2`).
@@ -144,8 +151,8 @@ Merci pour votre confiance ! J'ai bien reçu votre devis signé. Récapitulatif 
 - Prestation : formule [Escapade], organisation de voyage sur mesure
 - Voyageurs : [2]
 - Prix total : [169,00] € [TVA non applicable, art. 293 B du CGI]
-- Acompte de 10 % : [16,90] €, à régler par virement (référence [D-2026-001])
-- Solde : [152,10] €, [à la remise du carnet de voyage]
+- Acompte de 50 % : [84,50] €, à régler par virement (référence [D-2026-001])
+- Solde : [84,50] €, [à la remise du carnet de voyage]
 - Date de commande : [jj/mm/aaaa]
 
 Démarrage de la prestation : [vous avez demandé, en cochant la case du devis,
@@ -169,9 +176,12 @@ Le pied de page de toutes les pages affiche « Site conçu par ML Web Design » 
 ## Animations
 
 Volontairement rares, toutes désactivées si le visiteur préfère réduire les animations :
-- **Hero** : le titre monte ligne par ligne, puis le disque solaire se lève (CSS pur, pas de clignotement en attendant le JavaScript).
+- **Hero** : le titre apparaît ligne par ligne en fondu avec une légère montée, puis le disque solaire se lève. C'est du CSS pur. Le titre n'utilise **pas de masque** (`overflow: hidden`) : sur mobile, quand l'animation saccadait pendant le chargement, ou dans Safari, le masque laissait voir des lignes coupées en deux. Avec un simple fondu, une ligne reste entière à tout instant. La vidéo et son image d'attente sont découpées en cercle par un `clip-path` posé sur le média lui-même, la méthode fiable dans Safari.
 - **Bandeau des continents** : défilement lent et continu, qui se met en pause au survol.
-- **Étapes** : un avion parcourt la ligne de vol et allume les pastilles à son passage. Il ne se déclenche qu'une fois, et sa fin est mesurée en JavaScript pour tomber juste quelle que soit la largeur d'écran.
+- **« Comment ça se passe »** : l'avion fait escale à chaque étape. Il décolle d'une pastille, suit un arc (vers le haut sur ordinateur, vers la gauche sur mobile pour ne pas couper les textes) et se pose sur la suivante, qui s'allume avec une onde. En vol, il grossit et son ombre s'éloigne pour suggérer l'altitude, et une traînée corail se dessine derrière lui. À la fin, il s'efface pour laisser le « 4 » lisible.
+  - Les arcs sont recalculés au redimensionnement et à la rotation d'écran.
+  - Durées réglables dans `main.js` › `initStepsFlight` (`hopDuration`, `groundPause`).
+  - Sans JavaScript : ligne pointillée droite.
 - **Interactions** : zoom lent des photos au survol, ouverture animée des questions de la FAQ (navigateurs compatibles), retour visuel sur les boutons.
 
 ## Qualité : résultats d'audit
@@ -203,8 +213,8 @@ Optimisations en place :
 ## Reste à fournir par la cliente
 
 - [ ] Domaine définitif
-- [ ] Clé Web3Forms, URL Brevo
-- [ ] Informations d'entreprise saisies dans l'outil devis/factures (IBAN, médiateur, échéance du solde)
+- [ ] Activation FormSubmit (clic dans l'e-mail reçu sur mariedreamplanner@gmail.com), puis alias ; URL Brevo
+- [ ] Informations de Marie pour le devis dans `config.js` › `quoteIssuer` (nom + EI, adresse, médiateur, échéance du solde, banque)
 - [ ] Informations légales : nom, SIRET, adresse, téléphone, hébergeur, régime de TVA
 - [ ] Médiateur de la consommation désigné
 - [ ] Délais de remise par formule, nombre de modifications incluses, grille de rétractation
