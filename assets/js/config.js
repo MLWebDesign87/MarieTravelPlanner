@@ -21,9 +21,9 @@ window.siteConfig = Object.freeze({
    *   endpoint = https://api.web3forms.com/submit + web3formsAccessKey.
    */
   formProvider: "formsubmit",
-  // Destination des demandes : directement le Gmail de Marie (ne dépend pas de la redirection
-  // de contact@). Provisoire : à remplacer par l’alias FormSubmit après activation (voir README).
-  formEndpoint: "https://formsubmit.co/mariedreamplanner@gmail.com",
+  // Destination des demandes : l’ALIAS FormSubmit de la boîte Gmail de Marie (voir README,
+  // section « Activation »). Ne jamais committer l’adresse e-mail elle-même : ce dépôt est public.
+  formEndpoint: "https://formsubmit.co/VOTRE-ALIAS-FORMSUBMIT",
   web3formsAccessKey: "",
 
   /**
@@ -37,7 +37,7 @@ window.siteConfig = Object.freeze({
     legalName: "",            // ex. « Marie Dupont EI » (mention EI obligatoire)
     address: "",              // adresse postale
     siret: "106 296 882 00017",
-    email: "contact@mariedreamplanner.fr",           // adresse publique (redirigée vers le Gmail de Marie)
+    email: "contact@mariedreamplanner.fr",           // adresse publique (redirigée vers la boîte de Marie)
     phone: "",
     vatMention: "TVA non applicable, article 293 B du CGI.",
     mediator: "",             // nom, adresse et site du médiateur de la consommation

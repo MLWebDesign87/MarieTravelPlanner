@@ -74,6 +74,7 @@
         "description": "Travel planner basée à Cannes : organisation de voyages sur mesure, itinéraires personnalisés et carnets de voyage.",
         "url": "https://www.mariedreamplanner.fr/",
         "email": "contact@mariedreamplanner.fr",
+        "sameAs": ["https://www.instagram.com/mariedreamplanner/"],
         "logo": "https://www.mariedreamplanner.fr/assets/icons/icon-512.png",
         "image": "https://www.mariedreamplanner.fr/assets/img/og-image.jpg",
         "priceRange": "79 € – 299 €",
@@ -341,7 +342,7 @@
     </section>
 
     <!-- ========================= FORMULES =========================
-         Illustrations originales (scripts/art/), servies en WebP responsive.
+         Photos Pexels (crédits : mentions légales), recadrées en 4:3, retouchées et servies en WebP responsive.
          La jauge indique la plage de durée couverte sur une échelle de 30 jours. -->
     <section class="section formulas" id="formules" aria-labelledby="formulasTitle">
       <div class="container">
@@ -357,7 +358,7 @@
               <picture>
                 <source type="image/webp" sizes="(min-width: 960px) 360px, 92vw"
                         srcset="assets/media/formula-weekend-640.webp 640w, assets/media/formula-weekend-960.webp 960w, assets/media/formula-weekend-1280.webp 1280w">
-                <img src="assets/media/formula-weekend-960.jpg" alt="Illustration : maisons à pignons le long d’un canal d’Amsterdam au coucher du soleil" width="960" height="720" loading="lazy" decoding="async">
+                <img src="assets/media/formula-weekend-960.jpg" alt="Prague en fin de journée : bateau sur la Vltava, quais et château de Prague" width="960" height="720" loading="lazy" decoding="async">
               </picture>
             </figure>
             <div class="offer__body">
@@ -382,7 +383,7 @@
               <picture>
                 <source type="image/webp" sizes="(min-width: 960px) 360px, 92vw"
                         srcset="assets/media/formula-escapade-640.webp 640w, assets/media/formula-escapade-960.webp 960w, assets/media/formula-escapade-1280.webp 1280w">
-                <img src="assets/media/formula-escapade-960.jpg" alt="Illustration : skyline de New York et pont de Brooklyn au coucher du soleil" width="960" height="720" loading="lazy" decoding="async">
+                <img src="assets/media/formula-escapade-960.jpg" alt="Le pont de Brooklyn et la skyline de Manhattan au coucher du soleil, à New York" width="960" height="720" loading="lazy" decoding="async">
               </picture>
             </figure>
             <div class="offer__body">
@@ -407,7 +408,7 @@
               <picture>
                 <source type="image/webp" sizes="(min-width: 960px) 360px, 92vw"
                         srcset="assets/media/formula-evasion-640.webp 640w, assets/media/formula-evasion-960.webp 960w, assets/media/formula-evasion-1280.webp 1280w">
-                <img src="assets/media/formula-evasion-960.jpg" alt="Illustration : bungalows sur pilotis face à une montagne de Polynésie au coucher du soleil" width="960" height="720" loading="lazy" decoding="async">
+                <img src="assets/media/formula-evasion-960.jpg" alt="Bungalows sur pilotis dans un lagon turquoise de Polynésie française, bordé de palmiers" width="960" height="720" loading="lazy" decoding="async">
               </picture>
             </figure>
             <div class="offer__body">
@@ -520,9 +521,9 @@
           <p class="quote__hint">Les champs marqués d’un astérisque (*) sont obligatoires.</p>
         </div>
 
-        <!-- action : endpoint FormSubmit, identique à formEndpoint de config.js
-             (sert à l’envoi sans JavaScript ; remplacer l’adresse par l’alias FormSubmit après activation) -->
-        <form class="form quote__form" id="quoteForm" action="https://formsubmit.co/mariedreamplanner@gmail.com" method="POST" enctype="multipart/form-data" novalidate>
+        <!-- action : alias FormSubmit, identique à formEndpoint de config.js (sert à l’envoi sans
+             JavaScript). Jamais l’adresse e-mail elle-même : ce dépôt est public (voir README). -->
+        <form class="form quote__form" id="quoteForm" action="https://formsubmit.co/VOTRE-ALIAS-FORMSUBMIT" method="POST" enctype="multipart/form-data" novalidate>
           <!-- Champs techniques FormSubmit (adaptés par main.js si formProvider = "web3forms") -->
           <input type="hidden" name="_subject" value="Nouvelle demande de devis — Marie Dream Planner" data-role="subject">
           <input type="hidden" name="_next" value="https://www.mariedreamplanner.fr/merci.html?type=devis" data-role="redirect">
@@ -646,7 +647,7 @@
         <ul>
           <li><a href="#formules">Formules et tarifs</a></li>
           <li><a href="#devis">Demande de devis</a></li>
-          <li><a href="https://www.instagram.com/" rel="noopener" target="_blank">Instagram <span class="visually-hidden">(nouvel onglet)</span></a></li>
+          <li><a href="https://www.instagram.com/mariedreamplanner/" rel="noopener me" target="_blank">Instagram <span class="visually-hidden">(@mariedreamplanner, nouvel onglet)</span></a></li>
           <li><a href="mentions-legales.html">Mentions légales</a></li>
           <li><a href="mentions-legales.html#confidentialite">Confidentialité</a></li>
           <li><a href="cgv.html">Conditions générales de vente</a></li>

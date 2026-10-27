@@ -22,38 +22,38 @@ Paiement, devis et newsletter passent par des services tiers configurables dans 
     ├── js/main.js           Navigation, validation, envois (camelCase, commenté)
     ├── fonts/               Gloock + Poppins auto-hébergées (woff2, sous-ensemble latin)
     ├── img/                 Logos (Marie Dream Planner, ML Web Design en SVG), portrait, image de partage
-    ├── media/               Illustrations des formules + animation du hero (créations originales)
+    ├── media/               Photos des formules (Pexels, retouchées) + animation du hero
     └── icons/               Favicons et icônes PWA
 scripts/                     Outils de production (non déployés, bloqués par .htaccess)
 ├── documents/               Générateur du modèle Word du devis (build-templates.js)
-├── art/                     Générateurs des illustrations et de l'animation (build-art.sh)
-└── fetch-media.sh           Option : remplacer par des photos/vidéo libres de droits
+└── art/                     Générateur de l'animation du hero (build-art.sh)
 ```
 
-## 0. Médias : illustrations et vidéo d'accueil
+## 0. Médias : photos des formules et vidéo d'accueil
 
-Les visuels sont des **créations originales**, déjà en place dans `assets/media/`. Il n'y a donc aucune licence à gérer.
+- **Formules** : trois photos Pexels, libres de droits pour un usage commercial et sans attribution obligatoire. Les crédits figurent quand même dans les mentions légales, par courtoisie.
+  - Week-end : Prague, photographe airamdphoto.
+  - Escapade : New York, peederopecta.
+  - Évasion : Polynésie, gapeppy1.
 
-- **Formules** : trois illustrations vectorielles « papier découpé » dans la palette du logo : Amsterdam (Week-end), New York (Escapade) et la Polynésie (Évasion). Elles sont en WebP 640/960/1280 px plus un JPEG de secours, de 13 à 31 Ko chacune.
-- **Accueil** : une animation de 12 s qui boucle sans à-coup : coucher de soleil, vagues, palmiers, oiseaux, reflets. Elle est carrée, en 960 px, et pèse 460 Ko en MP4 et 380 Ko en WebM, sans piste son. Chaque mouvement est périodique sur 12 s, et l'écart entre la dernière et la première image est inférieur à 0,01 px.
+  Elles sont recadrées en 4:3 et légèrement retouchées pour s'accorder à la palette chaude du site (chaleur, contraste, saturation). Elles sont exportées en WebP 640/960/1280 px, plus un JPEG de secours, sans métadonnées.
+- **Accueil** : une animation originale de 12 s qui boucle sans à-coup : coucher de soleil, vagues, palmiers, oiseaux, reflets. Elle est carrée, en 960 px, et pèse 460 Ko en MP4 et 380 Ko en WebM, sans piste son.
 
-**Modifier ou régénérer les visuels** (`scripts/art/`) :
+**Changer une photo de formule** : remplacer les 4 fichiers `assets/media/formula-<weekend|escapade|evasion>-{640,960,1280}.webp` et `-960.jpg`, au ratio 4:3, en conservant les noms. Mettre aussi à jour le texte alternatif dans `index.html` et les crédits dans les mentions légales.
+
+**Régénérer l'animation** (`scripts/art/`) :
 
 ```bash
 pip install playwright pillow && playwright install chromium   # une seule fois
-./scripts/art/build-art.sh                                     # ≈ 2 minutes
+./scripts/art/build-art.sh                                     # ≈ 1 minute
 ```
 
-- `illus.py` : les trois scènes. Couleurs, positions et éléments sont paramétrés dans chaque fonction `sceneXxx()`.
-- `video.py` : l'animation. Vitesse des vagues, oscillation des palmes et trajectoire des oiseaux sont réglables dans `frameSvg()`.
-- Les rendus intermédiaires vont dans `scripts/art/build/`. Ce dossier n'est pas à déployer et il est ignoré par Git.
+`video.py` contient la scène : vitesse des vagues, oscillation des palmes et trajectoire des oiseaux sont réglables dans `frameSvg()`. Les rendus intermédiaires vont dans `scripts/art/build/`, ignoré par Git.
 
 **Comportement de la vidéo** (`main.js › initHeroVideo`) :
 - elle n'est jamais chargée si le visiteur a activé « réduire les animations » ou l'économie de données ; l'image d'attente, qui est la première image de la boucle, reste alors affichée ;
 - elle apparaît en fondu et se met en pause hors écran ;
 - un bouton pause/lecture est proposé, comme l'exige le critère WCAG 2.2.2.
-
-**Préférer de vraies photos ?** `scripts/fetch-media.sh` télécharge des photos et une vidéo libres de droits sélectionnées (Unsplash, Pexels, Mixkit ; sources et licences en tête du script) et remplace les illustrations. Pensez alors à rétablir les crédits photo dans `mentions-legales.html`.
 
 ## 1. Remplacer le domaine
 
@@ -128,7 +128,7 @@ Pour forcer la mise à jour des CSS/JS mis en cache un an, versionner leur URL d
 1. **Google Search Console** : valider le domaine, soumettre `sitemap.xml`, demander l'indexation de la page d'accueil.
 2. **Fiche d'établissement Google** (Google Business Profile) : la créer en tant qu'**entreprise de zone de service** (adresse masquée si Marie travaille de chez elle), catégorie proche de « conseiller en voyages », zone desservie : Cannes et Alpes-Maritimes. C'est le levier principal pour « travel planner Cannes ». Ensuite, ajouter son URL dans le JSON-LD de `index.html` sous `"sameAs"`.
 3. Récolter des **avis Google** après chaque voyage : ils pèsent fortement dans le classement local.
-4. Ajouter le vrai lien Instagram (pied de page) et l'inscrire aussi dans `"sameAs"`.
+4. Le compte Instagram (@mariedreamplanner) est déjà relié : lien dans le pied de page et dans `"sameAs"` des données structurées. Y ajouter l'URL de la fiche Google une fois créée.
 5. Tester les données structurées avec le **test des résultats enrichis** de Google, et les performances avec PageSpeed Insights.
 
 Déjà en place : title et meta description ciblés (« travel planner à Cannes », « voyage sur mesure »), Cannes intégrée naturellement dans le hero, la présentation, la FAQ et le pied de page, JSON-LD `ProfessionalService` avec localité (Cannes, Alpes-Maritimes) et zone desservie, les 3 offres et leurs prix, `Person`, `FAQPage`, `WebSite`. Également : un seul H1, canonical, Open Graph, images responsives WebP, polices préchargées, sitemap, pages légales en `noindex`.
@@ -240,4 +240,4 @@ Le dépôt est public, et tout ce qu'il contient est lisible par n'importe qui, 
 - [ ] Médiateur de la consommation désigné
 - [ ] Délais de remise par formule, nombre de modifications incluses, grille de rétractation
 - [ ] Politique d'affiliation (liens commissionnés ou non), CGV art. 12
-- [ ] Lien Instagram et fiche Google Business Profile
+- [ ] Fiche Google Business Profile
