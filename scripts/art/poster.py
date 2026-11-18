@@ -1,17 +1,31 @@
-"""Rend l'image 0 de l'animation en 1280×1280 (image d'attente haute définition)."""
+"""Renders frame 0 of the hero animation at 1280×1280 (high-definition poster)."""
+
+import asyncio
 import os
 
-# Dossier de travail des rendus intermédiaires (non déployé)
-artDir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "build")
-os.makedirs(artDir, exist_ok=True)
-
-import asyncio, video
 from playwright.async_api import async_playwright
-async def main():
-    async with async_playwright() as p:
-        b = await p.chromium.launch()
-        pg = await b.new_page(viewport={'width': 960, 'height': 960}, device_scale_factor=1280 / 960)
-        await pg.set_content(f'<html><body style="margin:0">{video.frameSvg(0)}</body></html>')
-        await pg.screenshot(path=f'{artDir}/poster-1280.png', clip={'x': 0, 'y': 0, 'width': 960, 'height': 960})
-        await b.close()
-asyncio.run(main())
+from video import ART_BUILD_DIR, FRAME_PIXELS, frame_svg
+
+POSTER_PIXELS = 1280
+
+
+async def render_poster():
+    """Screenshots frame 0 at a device scale factor that yields POSTER_PIXELS."""
+    os.makedirs(ART_BUILD_DIR, exist_ok=True)
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch()
+        page = await browser.new_page(
+            viewport={"width": FRAME_PIXELS, "height": FRAME_PIXELS},
+            device_scale_factor=POSTER_PIXELS / FRAME_PIXELS,
+        )
+        await page.set_content(f'<html><body style="margin:0">{frame_svg(0)}</body></html>')
+        await page.screenshot(
+            path=os.path.join(ART_BUILD_DIR, f"poster-{POSTER_PIXELS}.png"),
+            clip={"x": 0, "y": 0, "width": FRAME_PIXELS, "height": FRAME_PIXELS},
+        )
+        await browser.close()
+
+
+if __name__ == "__main__":
+    asyncio.run(render_poster())
+    print("Poster rendered.")

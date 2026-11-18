@@ -2,15 +2,15 @@
 <html lang="fr">
 <head>
   <!-- ==========================================================
-       Marie Dream Planner — Site vitrine
-       Page unique (one-page) : accueil, formules, à propos, FAQ, devis.
-       ⚠️ Remplacer https://www.mariedreamplanner.fr par le domaine final
-          (rechercher/remplacer dans tout le projet).
+       Marie Dream Planner — Showcase website
+       One-page site: home, formulas, about, FAQ, quote request.
+       Canonical domain: https://www.mariedreamplanner.fr
+       (to change it, search and replace across public/).
        ========================================================== -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- SEO : titre (~55 car.) et description (~155 car.) -->
+  <!-- SEO: title (~55 characters) and description (~155 characters) -->
   <title>Travel planner à Cannes, voyage sur mesure | Marie Dream Planner</title>
   <meta name="description" content="Travel planner basée à Cannes, Marie organise votre voyage sur mesure : itinéraire personnalisé, transports, logements et bonnes adresses. Dès 79 €.">
   <link rel="canonical" href="https://www.mariedreamplanner.fr/">
@@ -31,19 +31,19 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Logo Marie Dream Planner : soleil couchant, vague et palmier">
 
-  <!-- Twitter / X -->
+  <!-- Twitter / X card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Marie Dream Planner — Travel planner à Cannes, voyage sur mesure">
   <meta name="twitter:description" content="Votre voyage sur mesure, organisé par une travel planner passionnée basée à Cannes. Dès 79 €.">
   <meta name="twitter:image" content="https://www.mariedreamplanner.fr/assets/img/og-image.jpg">
 
-  <!-- Icônes & PWA -->
+  <!-- Icons & web app manifest -->
   <link rel="icon" href="/assets/icons/favicon.ico" sizes="48x48">
   <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
 
-  <!-- Performance : préchargement des polices auto-hébergées (RGPD : aucun appel à Google Fonts) -->
+  <!-- Performance: preload the self-hosted fonts (GDPR: no request to Google Fonts) -->
   <link rel="preload" href="assets/fonts/gloock-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/poppins-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 
@@ -52,7 +52,7 @@
         imagesizes="(min-width: 56.25em) min(40vw, 34rem), min(60vw, 17rem)">
   <link rel="stylesheet" href="assets/css/styles.css">
 
-  <!-- Données structurées (schema.org) : entreprise, offres, fondatrice, FAQ -->
+  <!-- Structured data (schema.org): business, offers, founder, FAQ, website -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -82,12 +82,15 @@
         "paymentAccepted": "Virement bancaire",
         "address": {
           "@type": "PostalAddress",
-          "addressLocality": "Cannes",
+          "streetAddress": "76 avenue Franklin Roosevelt",
+          "postalCode": "06110",
+          "addressLocality": "Le Cannet",
           "addressRegion": "Provence-Alpes-Côte d’Azur",
           "addressCountry": "FR"
         },
         "areaServed": [
           { "@type": "City", "name": "Cannes" },
+          { "@type": "City", "name": "Le Cannet" },
           { "@type": "AdministrativeArea", "name": "Alpes-Maritimes" },
           { "@type": "Country", "name": "France" }
         ],
@@ -120,6 +123,18 @@
               "price": "299",
               "priceCurrency": "EUR",
               "url": "https://www.mariedreamplanner.fr/#formules"
+            },
+            {
+              "@type": "Offer",
+              "name": "Option assistance WhatsApp pendant le voyage",
+              "description": "Conseils et informations par WhatsApp pendant le voyage, en complément d’une formule.",
+              "priceSpecification": {
+                "@type": "UnitPriceSpecification",
+                "price": "15",
+                "priceCurrency": "EUR",
+                "unitText": "jour"
+              },
+              "url": "https://www.mariedreamplanner.fr/#formules"
             }
           ]
         }
@@ -127,7 +142,9 @@
       {
         "@type": "Person",
         "@id": "https://www.mariedreamplanner.fr/#marie",
-        "name": "Marie",
+        "name": "Marie Binz",
+        "givenName": "Marie",
+        "familyName": "Binz",
         "jobTitle": "Travel planner",
         "image": "https://www.mariedreamplanner.fr/assets/img/marie-travel-planner-800.jpg",
         "worksFor": { "@id": "https://www.mariedreamplanner.fr/#business" }
@@ -174,7 +191,7 @@
           {
             "@type": "Question",
             "name": "Comment se passe le paiement ?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Par virement bancaire, sur devis. Un acompte de 50 % est versé à la signature du devis ; le solde est réglé selon l’échéance indiquée sur votre devis. Aucun paiement n’est demandé sur le site." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Par virement bancaire, sur devis. Un acompte de 50 % est versé à la signature du devis ; le solde est réglé à la finalisation du projet, et votre carnet de voyage vous est envoyé dès réception du paiement complet. Aucun paiement n’est demandé sur le site." }
           }
         ]
       }
@@ -187,10 +204,10 @@
 </head>
 
 <body>
-  <!-- Lien d’évitement (accessibilité clavier / lecteurs d’écran) -->
+  <!-- Skip link (keyboard and screen reader accessibility) -->
   <a class="skip-link" href="#main">Aller au contenu</a>
 
-  <!-- ========================= EN-TÊTE ========================= -->
+  <!-- ========================= HEADER ========================= -->
   <header class="site-header" id="siteHeader" data-state="transparent">
     <div class="site-header__inner container">
       <a class="brand" href="#accueil" aria-label="Marie Dream Planner, retour à l’accueil">
@@ -221,10 +238,10 @@
   <main id="main">
 
     <!-- ========================= HERO =========================
-         Le soleil du logo devient une fenêtre sur le voyage : la vidéo s’affiche
-         dans un disque qui se lève sur l’horizon au chargement.
-         Vidéo muette, en boucle, avec bouton pause (WCAG 2.2.2), non chargée si
-         l’utilisateur limite les animations ou ses données (voir main.js). -->
+         The logo's sun becomes a window onto travel: the video plays inside a
+         disc that rises over the horizon on load. Muted, looping video with a
+         pause button (WCAG 2.2.2), never loaded when the visitor prefers
+         reduced motion or reduced data usage (see main.js). -->
     <section class="hero" id="accueil" aria-labelledby="heroTitle">
       <div class="hero__inner container">
         <div class="hero__text">
@@ -243,7 +260,7 @@
 
         <div class="hero__sun">
           <div class="hero__disc" id="heroDisc">
-            <!-- Image d’attente responsive (affichée tant que la vidéo ne joue pas) -->
+            <!-- Responsive poster (shown until the video plays) -->
             <picture>
               <source type="image/webp" sizes="(min-width: 56.25em) min(40vw, 34rem), min(60vw, 17rem)"
                       srcset="assets/media/hero-poster-640.webp 640w, assets/media/hero-poster-960.webp 960w, assets/media/hero-poster-1280.webp 1280w">
@@ -260,7 +277,7 @@
         </div>
       </div>
 
-      <!-- Bandeau décoratif : les continents évoqués dans la présentation de Marie -->
+      <!-- Decorative marquee: the continents mentioned in Marie's introduction -->
       <div class="marquee" aria-hidden="true">
         <div class="marquee__track">
           <span>Europe</span><span>Asie</span><span>Afrique</span><span>Amérique</span><span>Océanie</span>
@@ -271,7 +288,7 @@
       </div>
     </section>
 
-    <!-- ========================= QU’EST-CE QU’UN TRAVEL PLANNER ========================= -->
+    <!-- ========================= WHAT IS A TRAVEL PLANNER ========================= -->
     <section class="section intro" id="travel-planner" aria-labelledby="introTitle">
       <div class="container">
         <div class="intro__grid">
@@ -284,7 +301,7 @@
             </div>
           </div>
 
-          <!-- Répartition des rôles : l’information clé du métier, présentée côte à côte -->
+          <!-- Split of responsibilities: the key information about the job, side by side -->
           <div class="roles">
             <div class="roles__card roles__card--marie">
               <h3 class="roles__title">Je m’occupe de</h3>
@@ -310,8 +327,8 @@
       </div>
     </section>
 
-    <!-- ========================= ÉTAPES (vraie séquence → numérotation justifiée) =========================
-         Un avion parcourt la ligne de vol quand la section entre à l’écran (une seule fois). -->
+    <!-- ========================= STEPS (a real sequence, hence the numbering) =========================
+         A plane flies from step to step when the section comes into view (once, see main.js). -->
     <section class="section steps" aria-labelledby="stepsTitle">
       <div class="container">
         <h2 class="section__title" id="stepsTitle">Comment ça se passe</h2>
@@ -341,9 +358,9 @@
       </div>
     </section>
 
-    <!-- ========================= FORMULES =========================
-         Photos Pexels (crédits : mentions légales), recadrées en 4:3, retouchées et servies en WebP responsive.
-         La jauge indique la plage de durée couverte sur une échelle de 30 jours. -->
+    <!-- ========================= FORMULAS =========================
+         Pexels photos (credits in the legal notice), cropped to 4:3, retouched, served as responsive WebP.
+         The gauge shows the covered duration range on a 30-day scale. -->
     <section class="section formulas" id="formules" aria-labelledby="formulasTitle">
       <div class="container">
         <div class="section__head">
@@ -352,7 +369,7 @@
         </div>
 
         <div class="formulas__grid">
-          <!-- Formule Week-end -->
+          <!-- Week-end formula -->
           <article class="offer" aria-labelledby="offerWeekendTitle">
             <figure class="offer__media">
               <picture>
@@ -373,11 +390,12 @@
                 <li>Jusqu’à 4 voyageurs</li>
               </ul>
               <p class="offer__price"><span class="offer__amount">79&nbsp;€</span> <span class="offer__extra">+ 10&nbsp;€ par voyageur supplémentaire</span></p>
+              <p class="offer__option"><span class="offer__option-tag">Option</span> Assistance WhatsApp pendant le voyage&nbsp;: 15&nbsp;€ par jour</p>
               <a class="button button--primary offer__cta" href="#devis" data-formula="Week-end">Demander un devis Week-end</a>
             </div>
           </article>
 
-          <!-- Formule Escapade -->
+          <!-- Escapade formula -->
           <article class="offer" aria-labelledby="offerEscapadeTitle">
             <figure class="offer__media">
               <picture>
@@ -398,11 +416,12 @@
                 <li>Jusqu’à 4 voyageurs</li>
               </ul>
               <p class="offer__price"><span class="offer__amount">169&nbsp;€</span> <span class="offer__extra">+ 10&nbsp;€ par voyageur supplémentaire</span></p>
+              <p class="offer__option"><span class="offer__option-tag">Option</span> Assistance WhatsApp pendant le voyage&nbsp;: 15&nbsp;€ par jour</p>
               <a class="button button--primary offer__cta" href="#devis" data-formula="Escapade">Demander un devis Escapade</a>
             </div>
           </article>
 
-          <!-- Formule Évasion -->
+          <!-- Évasion formula -->
           <article class="offer" aria-labelledby="offerEvasionTitle">
             <figure class="offer__media">
               <picture>
@@ -423,6 +442,7 @@
                 <li>Jusqu’à 4 voyageurs</li>
               </ul>
               <p class="offer__price"><span class="offer__amount">299&nbsp;€</span> <span class="offer__extra">+ 10&nbsp;€ par voyageur supplémentaire</span></p>
+              <p class="offer__option"><span class="offer__option-tag">Option</span> Assistance WhatsApp pendant le voyage&nbsp;: 15&nbsp;€ par jour</p>
               <a class="button button--primary offer__cta" href="#devis" data-formula="Évasion">Demander un devis Évasion</a>
             </div>
           </article>
@@ -430,12 +450,12 @@
 
         <div class="formulas__notes">
           <p class="formulas__custom">Un EVJF, un EVG ou un projet hors formule&nbsp;? <a href="#devis" data-formula="EVJF / EVG">Demandez un devis personnalisé</a>.</p>
-          <p class="formulas__secure">Paiement par virement bancaire, sur devis&nbsp;: un acompte de 50&nbsp;% à la signature, le solde selon l’échéance indiquée sur le devis. Le prix couvre la prestation de conseil et d’organisation&nbsp;; billets, hébergements et activités se réservent et se règlent directement auprès des prestataires. Consultez les <a href="cgv.html">conditions générales de vente</a>, notamment sur le droit de rétractation.</p>
+          <p class="formulas__secure">Paiement par virement bancaire, sur devis&nbsp;: un acompte de 50&nbsp;% à la signature, le solde à la finalisation du projet, avant l’envoi du carnet de voyage. Le prix couvre la prestation de conseil et d’organisation&nbsp;; billets, hébergements et activités se réservent et se règlent directement auprès des prestataires. Consultez les <a href="/cgv">conditions générales de vente</a>, notamment sur le droit de rétractation.</p>
         </div>
       </div>
     </section>
 
-    <!-- ========================= À PROPOS ========================= -->
+    <!-- ========================= ABOUT ========================= -->
     <section class="section about" id="a-propos" aria-labelledby="aboutTitle">
       <div class="container about__grid">
         <figure class="about__portrait">
@@ -464,7 +484,7 @@
       </div>
     </section>
 
-    <!-- ========================= FAQ (accordéons natifs <details>, ouverture animée en CSS) ========================= -->
+    <!-- ========================= FAQ (native <details> accordions, opening animated in CSS) ========================= -->
     <section class="section faq" id="faq" aria-labelledby="faqTitle">
       <div class="container faq__grid">
         <div class="faq__intro">
@@ -502,40 +522,40 @@
           </details>
           <details class="faq__item">
             <summary class="faq__question">Comment se passe le paiement&nbsp;?</summary>
-            <div class="faq__answer"><p>Par virement bancaire, sur devis. Un acompte de 50&nbsp;% est versé à la signature du devis&nbsp;; le solde est réglé selon l’échéance indiquée sur votre devis. Aucun paiement n’est demandé sur le site.</p></div>
+            <div class="faq__answer"><p>Par virement bancaire, sur devis. Un acompte de 50&nbsp;% est versé à la signature du devis&nbsp;; le solde est réglé à la finalisation du projet, et votre carnet de voyage vous est envoyé dès réception du paiement complet. Aucun paiement n’est demandé sur le site.</p></div>
           </details>
         </div>
       </div>
     </section>
 
-    <!-- ========================= DEMANDE DE DEVIS =========================
-         Envoi d’e-mail sans backend (FormSubmit par défaut, voir assets/js/config.js).
-         À l’envoi, le navigateur génère le devis Word pré-rempli et le joint à l’e-mail
-         (champ fichier caché « attachment »). Si la génération échoue, la demande part
-         quand même, sans pièce jointe. Sans JavaScript : envoi classique, sans devis. -->
+    <!-- ========================= QUOTE REQUEST =========================
+         Email delivery without a backend (FormSubmit by default, see assets/js/config.js).
+         On submit, the browser builds the prefilled Word quote and attaches it to the
+         email (hidden "attachment" file input). If generation fails, the request is
+         still sent, without attachment. Without JavaScript: classic POST, no quote. -->
     <section class="section quote" id="devis" aria-labelledby="quoteTitle">
       <div class="container quote__grid">
         <div class="quote__intro">
           <h2 class="section__title" id="quoteTitle">Demande de devis</h2>
-          <p class="section__lead">Parlez-moi de votre projet&nbsp;: destination rêvée, dates, nombre de voyageurs… Je vous réponds personnellement par e-mail.</p>
+          <p class="section__lead">Parlez-moi de votre projet&nbsp;: destination rêvée, dates, nombre de voyageurs… Je vous réponds personnellement par e-mail. La demande de devis est gratuite et sans engagement.</p>
           <p class="quote__hint">Les champs marqués d’un astérisque (*) sont obligatoires.</p>
         </div>
 
-        <!-- action : alias FormSubmit, identique à formEndpoint de config.js (sert à l’envoi sans
-             JavaScript). Jamais l’adresse e-mail elle-même : ce dépôt est public (voir README). -->
+        <!-- action: FormSubmit alias, identical to formEndpoint in config.js (used when JavaScript
+             is unavailable). Never the email address itself: this repository is public. -->
         <form class="form quote__form" id="quoteForm" action="https://formsubmit.co/VOTRE-ALIAS-FORMSUBMIT" method="POST" enctype="multipart/form-data" novalidate>
-          <!-- Champs techniques FormSubmit (adaptés par main.js si formProvider = "web3forms") -->
+          <!-- FormSubmit technical fields (adapted by main.js when formProvider is "web3forms") -->
           <input type="hidden" name="_subject" value="Nouvelle demande de devis — Marie Dream Planner" data-role="subject">
-          <input type="hidden" name="_next" value="https://www.mariedreamplanner.fr/merci.html?type=devis" data-role="redirect">
+          <input type="hidden" name="_next" value="https://www.mariedreamplanner.fr/merci" data-role="redirect">
           <input type="hidden" name="_captcha" value="false">
           <input type="hidden" name="_template" value="table">
-          <!-- Pot de miel anti-spam : invisible pour les humains -->
+          <!-- Anti-spam honeypot: invisible to humans -->
           <input type="text" name="_honey" class="form__honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" data-role="honeypot">
-          <!-- Devis Word généré à l’envoi (rempli par main.js, jamais par l’utilisateur) -->
+          <!-- Word quote generated on submit (filled by main.js, never by the visitor) -->
           <input type="file" name="attachment" id="quoteAttachment" class="form__honeypot" tabindex="-1" aria-hidden="true">
 
-          <!-- Les attributs « name » sont en français : ils deviennent les intitulés de l’e-mail reçu.
-               Les « id » restent en camelCase pour le JavaScript et les labels. -->
+          <!-- `name` attributes are in French on purpose: they become the row labels of the email
+               Marie receives. `id` attributes stay in camelCase for JavaScript and labels. -->
           <div class="form__row">
             <div class="form__field">
               <label class="form__label" for="firstName">Prénom *</label>
@@ -591,6 +611,21 @@
             </div>
           </div>
 
+          <!-- Optional WhatsApp assistance. The day count is shown, enabled and required only
+               when the option is ticked (see main.js); without JavaScript both fields stay visible. -->
+          <fieldset class="form__option">
+            <legend class="form__label form__option-legend">Option</legend>
+            <div class="form__field form__field--checkbox">
+              <input class="form__checkbox" id="assistanceOption" name="Option assistance WhatsApp" type="checkbox" value="Oui" aria-controls="assistanceDaysField">
+              <label class="form__label form__label--inline" for="assistanceOption">Assistance WhatsApp pendant le voyage, 15&nbsp;€ par jour</label>
+            </div>
+            <div class="form__field form__option-days" id="assistanceDaysField">
+              <label class="form__label" for="assistanceDays">Nombre de jours d’assistance</label>
+              <input class="form__input" id="assistanceDays" name="Jours d’assistance" type="number" min="1" max="60" inputmode="numeric" data-validate aria-describedby="assistanceDaysError">
+              <p class="form__error" id="assistanceDaysError" aria-live="polite"></p>
+            </div>
+          </fieldset>
+
           <div class="form__field">
             <label class="form__label" for="message">Votre projet *</label>
             <textarea class="form__input form__textarea" id="message" name="Message" rows="6" required minlength="20" aria-describedby="messageError" placeholder="Vos envies, votre budget, votre façon de voyager…"></textarea>
@@ -599,7 +634,7 @@
 
           <div class="form__field form__field--checkbox">
             <input class="form__checkbox" id="quoteConsent" name="Consentement RGPD" type="checkbox" value="Oui" required aria-describedby="quoteConsentError">
-            <label class="form__label form__label--inline" for="quoteConsent">J’accepte que mes données soient utilisées pour répondre à ma demande, conformément à la <a href="mentions-legales.html#confidentialite">politique de confidentialité</a>. *</label>
+            <label class="form__label form__label--inline" for="quoteConsent">J’accepte que mes données soient utilisées pour répondre à ma demande, conformément à la <a href="/mentions-legales#confidentialite">politique de confidentialité</a>. *</label>
             <p class="form__error" id="quoteConsentError" aria-live="polite"></p>
           </div>
 
@@ -610,14 +645,14 @@
     </section>
   </main>
 
-  <!-- ========================= PIED DE PAGE + NEWSLETTER ========================= -->
+  <!-- ========================= FOOTER + NEWSLETTER ========================= -->
   <footer class="site-footer">
     <div class="container site-footer__grid">
       <section class="newsletter" aria-labelledby="newsletterTitle">
         <h2 class="newsletter__title" id="newsletterTitle">Inspirations voyage</h2>
         <p class="newsletter__text">Des idées de destinations, des bonnes adresses et mes conseils d’organisation, directement dans votre boîte mail. Désinscription en un clic.</p>
 
-        <!-- Inscription newsletter via Brevo (URL du formulaire dans assets/js/config.js) -->
+        <!-- Newsletter signup through Brevo (form URL in assets/js/config.js) -->
         <form class="newsletter__form" id="newsletterForm" method="POST" novalidate>
           <input type="text" name="email_address_check" value="" class="form__honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
           <input type="hidden" name="locale" value="fr">
@@ -648,17 +683,17 @@
           <li><a href="#formules">Formules et tarifs</a></li>
           <li><a href="#devis">Demande de devis</a></li>
           <li><a href="https://www.instagram.com/mariedreamplanner/" rel="noopener me" target="_blank">Instagram <span class="visually-hidden">(@mariedreamplanner, nouvel onglet)</span></a></li>
-          <li><a href="mentions-legales.html">Mentions légales</a></li>
-          <li><a href="mentions-legales.html#confidentialite">Confidentialité</a></li>
-          <li><a href="cgv.html">Conditions générales de vente</a></li>
+          <li><a href="/mentions-legales">Mentions légales</a></li>
+          <li><a href="/mentions-legales#confidentialite">Confidentialité</a></li>
+          <li><a href="/cgv">Conditions générales de vente</a></li>
         </ul>
       </nav>
     </div>
 
     <div class="site-footer__bottom container">
       <p class="site-footer__copyright">© <span id="currentYear">2026</span> Marie Dream Planner</p>
-      <!-- Crédit de conception. Pour le rendre cliquable, remplacer <p> par
-           <a class="credit" href="https://VOTRE-SITE" rel="noopener"> … </a> -->
+      <!-- Design credit. To make it a link, replace <p> with
+           <a class="credit" href="https://YOUR-WEBSITE" rel="noopener"> … </a> -->
       <p class="credit">
         <img class="credit__logo" src="assets/img/ml-web-design.svg" alt="" width="28" height="27" loading="lazy">
         <span>Site conçu par <strong class="credit__name">ML Web Design</strong></span>

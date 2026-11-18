@@ -1,26 +1,27 @@
 /**
  * ==========================================================================
- * Marie Dream Planner — Script principal
+ * Marie Dream Planner — Main script
  * --------------------------------------------------------------------------
- * JavaScript « vanilla », sans dépendance ni étape de build.
- * Chargé en `defer` : le DOM est prêt à l’exécution.
+ * Vanilla JavaScript, no dependencies, no build step.
+ * Loaded with `defer`: the DOM is ready when this runs.
  *
- * Le site reste utilisable sans JavaScript (amélioration progressive) :
- * ancres natives, accordéons <details>, formulaire de devis en POST classique.
+ * The site stays usable without JavaScript (progressive enhancement):
+ * native anchors, <details> accordions, classic POST for the quote form.
+ * Visitor-facing strings are in French; code and comments are in English.
  *
- * Sommaire
- *   1. Utilitaires
- *   2. En-tête (transparent → plein)
- *   3. Menu mobile
- *   4. Lien de navigation actif
- *   5. Présélection de la formule dans le formulaire de devis
- *   6. Validation de formulaire (générique)
- *   7. Formulaire de devis (e-mail + devis Word joint)
+ * Contents
+ *   1. Utilities
+ *   2. Header (transparent → solid)
+ *   3. Mobile navigation
+ *   4. Active navigation link
+ *   5. Formula preselection in the quote form
+ *   6. Form validation (generic)
+ *   7. Quote form (email + attached Word quote)
  *   8. Newsletter (Brevo)
- *   9. Page de remerciement
- *  10. Vidéo du hero
- *  11. Ligne de vol des étapes
- *  12. Initialisation
+ *   9. Hero video
+ *  10. Steps flight line
+ *  11. Footer year
+ *  12. Bootstrapping
  * ==========================================================================
  */
 
@@ -30,11 +31,11 @@
   const config = window.siteConfig || {};
 
   /* ------------------------------------------------------------------------
-   * 1. Utilitaires
+   * 1. Utilities
    * --------------------------------------------------------------------- */
 
   /**
-   * Raccourci de sélection d’un élément.
+   * Shorthand for querySelector.
    * @param {string} selector
    * @param {ParentNode} [scope=document]
    * @returns {Element|null}
@@ -42,7 +43,7 @@
   const qs = (selector, scope = document) => scope.querySelector(selector);
 
   /**
-   * Raccourci de sélection de plusieurs éléments (tableau).
+   * Shorthand for querySelectorAll, returned as an array.
    * @param {string} selector
    * @param {ParentNode} [scope=document]
    * @returns {Element[]}
@@ -50,8 +51,8 @@
   const qsa = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
 
   /**
-   * Affiche un message dans une zone de statut (role="status").
-   * @param {HTMLElement} statusElement
+   * Shows a message in a live status region (role="status").
+   * @param {HTMLElement|null} statusElement
    * @param {string} message
    * @param {"success"|"error"|""} [statusType=""]
    */
@@ -62,10 +63,10 @@
   };
 
   /**
-   * Bascule l’état « en cours d’envoi » d’un bouton.
-   * @param {HTMLButtonElement} button
+   * Toggles the "sending" state of a submit button.
+   * @param {HTMLButtonElement|null} button
    * @param {boolean} isBusy
-   * @param {string} [busyLabel]
+   * @param {string} [busyLabel] Label shown while busy (French, visitor-facing)
    */
   const setButtonBusy = (button, isBusy, busyLabel = "Envoi en cours…") => {
     if (!button) return;
@@ -81,33 +82,41 @@
     }
   };
 
+  /**
+   * Returns the trimmed value of a named form control.
+   * @param {HTMLFormElement} form
+   * @param {string} fieldName Value of the control's `name` attribute
+   * @returns {string}
+   */
+  const readFieldValue = (form, fieldName) => (form.elements.namedItem(fieldName)?.value || "").trim();
+
   /* ------------------------------------------------------------------------
-   * 2. En-tête : transparent sur le hero, plein ensuite
+   * 2. Header: transparent over the hero, solid afterwards
    * --------------------------------------------------------------------- */
   const initHeaderState = () => {
     const siteHeader = qs("#siteHeader");
     const heroSection = qs(".hero");
     if (!siteHeader) return;
 
-    // Pages sans hero : en-tête plein en permanence
+    // Pages without a hero keep a solid header
     if (!heroSection || !("IntersectionObserver" in window)) {
       siteHeader.dataset.state = "solid";
       return;
     }
 
-    // L’en-tête devient plein dès que le hero est presque sorti de l’écran
+    // The header turns solid as soon as the hero has almost left the screen.
+    // The hero content is observed: past it, the menu text would overlap light content.
     const headerObserver = new IntersectionObserver(
       ([heroEntry]) => {
         siteHeader.dataset.state = heroEntry.isIntersecting ? "transparent" : "solid";
       },
       { rootMargin: "-80px 0px 0px 0px", threshold: 0 }
     );
-    // On observe le titre : au-delà, le texte du menu croiserait le contenu clair
     headerObserver.observe(qs(".hero__content") || heroSection);
   };
 
   /* ------------------------------------------------------------------------
-   * 3. Menu mobile accessible
+   * 3. Accessible mobile navigation
    * --------------------------------------------------------------------- */
   const initMobileNav = () => {
     const navToggle = qs("#navToggle");
@@ -115,13 +124,13 @@
     if (!navToggle || !primaryNav) return;
 
     const toggleLabel = qs(".visually-hidden", navToggle);
-    // Contenu situé derrière le menu : rendu inerte quand le menu est ouvert
+    // Content behind the open menu, made inert while the menu is open
     const backgroundRegions = qsa("main, footer, .skip-link");
 
     /**
-     * Ouvre ou ferme le menu.
-     * Ouvert : le contenu d’arrière-plan devient inerte (ni clic ni tabulation),
-     * le focus va sur le premier lien. Fermé : tout redevient interactif.
+     * Opens or closes the menu.
+     * Open: background content becomes inert (no click, no tab stop) and the
+     * first link receives focus. Closed: everything becomes interactive again.
      * @param {boolean} shouldOpen
      */
     const setMenuOpen = (shouldOpen) => {
@@ -140,12 +149,12 @@
       setMenuOpen(!isOpen);
     });
 
-    // Fermeture au clic sur un lien (navigation par ancre)
+    // Close when a link is followed (in-page anchor navigation)
     primaryNav.addEventListener("click", (event) => {
       if (event.target.closest("a")) setMenuOpen(false);
     });
 
-    // Fermeture avec Échap, focus rendu au bouton
+    // Close with Escape and give focus back to the toggle
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && primaryNav.classList.contains("is-open")) {
         setMenuOpen(false);
@@ -153,14 +162,14 @@
       }
     });
 
-    // Repasse en mode bureau : on referme proprement
+    // Back to the desktop layout: close the menu cleanly (breakpoint mirrors the CSS)
     window.matchMedia("(min-width: 56.25em)").addEventListener("change", (mediaQuery) => {
       if (mediaQuery.matches) setMenuOpen(false);
     });
   };
 
   /* ------------------------------------------------------------------------
-   * 4. Lien de navigation actif selon la section visible
+   * 4. Active navigation link, based on the section in view
    * --------------------------------------------------------------------- */
   const initActiveNavLinks = () => {
     const navLinks = qsa(".primary-nav__link[href^='#']");
@@ -176,7 +185,7 @@
           });
         });
       },
-      { rootMargin: "-45% 0px -50% 0px" } // bande au milieu de l’écran
+      { rootMargin: "-45% 0px -50% 0px" } // thin band in the middle of the viewport
     );
 
     navLinks.forEach((navLink) => {
@@ -186,11 +195,11 @@
   };
 
   /* ------------------------------------------------------------------------
-   * 5. Présélection de la formule (boutons « Demander un devis » des cartes)
+   * 5. Formula preselection (the "Demander un devis" buttons on the cards)
    * --------------------------------------------------------------------- */
 
   /**
-   * Présélectionne une formule dans le formulaire de devis.
+   * Selects a formula in the quote form, if such an option exists.
    * @param {string} formulaName
    */
   const preselectFormula = (formulaName) => {
@@ -201,17 +210,17 @@
   };
 
   const initFormulaPreselect = () => {
-    // Pas de paiement en ligne : chaque formule mène au formulaire de devis, formule présélectionnée
+    // No online payment: every formula leads to the quote form, with that formula preselected
     qsa("a[href='#devis'][data-formula]").forEach((quoteLink) => {
       quoteLink.addEventListener("click", () => preselectFormula(quoteLink.dataset.formula));
     });
   };
 
   /* ------------------------------------------------------------------------
-   * 6. Validation de formulaire (générique, messages en français)
+   * 6. Form validation (generic, French messages)
    * --------------------------------------------------------------------- */
 
-  /** Messages d’erreur personnalisés, indexés par id de champ puis par type d’erreur. */
+  /** Custom error messages, keyed by field id, then by ValidityState flag. */
   const validationMessages = {
     firstName: { valueMissing: "Indiquez votre prénom." },
     lastName: { valueMissing: "Indiquez votre nom." },
@@ -226,28 +235,35 @@
       tooShort: "Ajoutez quelques détails (20 caractères minimum).",
     },
     quoteConsent: { valueMissing: "Cochez cette case pour que je puisse traiter votre demande." },
+    assistanceDays: {
+      valueMissing: "Indiquez le nombre de jours d’assistance souhaités.",
+      rangeUnderflow: "Indiquez au moins 1 jour d’assistance.",
+      rangeOverflow: "Indiquez 60 jours d’assistance au maximum.",
+      badInput: "Indiquez un nombre de jours, par exemple : 7.",
+    },
   };
 
+  /** ValidityState flags checked, in order of priority. */
+  const validityFlags = ["valueMissing", "badInput", "typeMismatch", "patternMismatch", "tooShort", "rangeOverflow", "rangeUnderflow"];
+
   /**
-   * Renvoie le message d’erreur adapté à l’état de validité d’un champ.
+   * Returns the error message matching a field's validity state.
    * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} field
-   * @returns {string} chaîne vide si le champ est valide
+   * @returns {string} Empty string when the field is valid
    */
   const getErrorMessage = (field) => {
     const { validity } = field;
-    if (validity.valid) return "";
+    if (field.disabled || validity.valid) return ""; // disabled fields are neither validated nor sent
 
     const fieldMessages = validationMessages[field.id] || {};
-    const errorType = ["valueMissing", "typeMismatch", "patternMismatch", "tooShort", "rangeOverflow", "rangeUnderflow"]
-      .find((type) => validity[type]);
-
+    const errorType = validityFlags.find((flag) => validity[flag]);
     return fieldMessages[errorType] || field.validationMessage;
   };
 
   /**
-   * Valide un champ et met à jour son message d’erreur associé.
+   * Validates a field and updates its associated error message.
    * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} field
-   * @returns {boolean} true si valide
+   * @returns {boolean} true when valid
    */
   const validateField = (field) => {
     const errorMessage = getErrorMessage(field);
@@ -260,12 +276,12 @@
   };
 
   /**
-   * Active la validation « en direct » : après la première sortie du champ.
+   * Enables live validation, starting after a field is first left.
    * @param {HTMLFormElement} form
-   * @returns {() => boolean} fonction qui valide tout le formulaire
+   * @returns {() => boolean} Validates the whole form
    */
   const attachValidation = (form) => {
-    const validatableFields = qsa("[required], [minlength], [type='email']", form)
+    const validatableFields = qsa("[required], [minlength], [type='email'], [data-validate]", form)
       .filter((field) => field.id && !field.classList.contains("form__honeypot"));
 
     validatableFields.forEach((field) => {
@@ -281,9 +297,9 @@
       });
     });
 
-    // Valide tout le formulaire et place le focus sur le premier champ en erreur.
-    // Les champs passent en mode « touché » : leurs erreurs s’effacent dès la saisie,
-    // ce qui évite un saut de mise en page au moment de cliquer ailleurs.
+    // Validates every field and focuses the first invalid one. Fields are marked
+    // as "touched" so their errors clear while typing, which avoids a layout
+    // jump when the visitor clicks elsewhere.
     return () => {
       validatableFields.forEach((field) => {
         field.dataset.touched = "true";
@@ -295,87 +311,146 @@
   };
 
   /* ------------------------------------------------------------------------
-   * 7. Formulaire de devis → e-mail à Marie, devis Word en pièce jointe
+   * 7. Quote form → email to Marie, with the Word quote attached
    * ------------------------------------------------------------------------
-   * Les pièces jointes exigent un envoi classique (multipart) : le devis est
-   * généré dans le navigateur, placé dans le champ fichier caché, puis le
-   * formulaire est soumis normalement (redirection vers merci.html).
+   * Attachments require a classic multipart submission: the quote is built in
+   * the browser, put into the hidden file input, then the form is submitted
+   * natively (the provider then redirects to /merci).
    * --------------------------------------------------------------------- */
 
-  /** Bibliothèques du devis, chargées seulement au moment de l’envoi. */
+  /** Quote libraries, loaded only when the form is submitted. */
   const quoteScripts = ["/assets/vendor/pizzip.min.js", "/assets/vendor/docxtemplater.min.js", "/assets/js/quote-generator.js"];
 
   /**
-   * Charge un script une seule fois.
+   * `name` attributes of the quote form controls. They are in French on
+   * purpose: they become the row labels of the email Marie receives.
+   */
+  const quoteFieldNames = {
+    firstName: "Prénom",
+    lastName: "Nom",
+    email: "email",
+    phone: "Téléphone",
+    formula: "Formule",
+    travelers: "Voyageurs",
+    destination: "Destination",
+    period: "Période",
+    assistanceDays: "Jours d’assistance",
+  };
+
+  /** Placeholder left in the form endpoint until the FormSubmit alias is set. */
+  const formEndpointPlaceholder = "VOTRE-ALIAS-FORMSUBMIT";
+
+  /**
+   * Loads a script once.
    * @param {string} src
    * @returns {Promise<void>}
    */
   const loadScript = (src) => new Promise((resolve, reject) => {
-    if (qs(`script[src="${src}"][data-loaded]`)) return resolve();
+    if (qs(`script[src="${src}"][data-loaded]`)) {
+      resolve();
+      return;
+    }
     const script = Object.assign(document.createElement("script"), { src, async: false });
     script.addEventListener("load", () => {
       script.dataset.loaded = "true";
       resolve();
     });
-    script.addEventListener("error", () => reject(new Error(`Chargement impossible : ${src}`)));
+    script.addEventListener("error", () => reject(new Error(`Could not load ${src}`)));
     document.head.append(script);
   });
 
   /**
-   * Adapte les champs techniques au fournisseur choisi dans config.js.
-   * Par défaut, le HTML est prêt pour FormSubmit.
+   * Adapts the technical fields to the provider chosen in config.js.
+   * The HTML is ready for FormSubmit by default.
    * @param {HTMLFormElement} quoteForm
    */
   const configureFormProvider = (quoteForm) => {
-    if (config.formEndpoint) quoteForm.action = config.formEndpoint;
-    if (config.formProvider !== "web3forms") return;
+    if (config.formProvider !== "web3forms") {
+      if (config.formEndpoint) quoteForm.action = config.formEndpoint;
+      return;
+    }
 
     quoteForm.action = config.formEndpoint || "https://api.web3forms.com/submit";
-    const fieldNames = { subject: "subject", redirect: "redirect", honeypot: "botcheck" };
-    Object.entries(fieldNames).forEach(([role, name]) => {
+    const web3formsFieldNames = { subject: "subject", redirect: "redirect", honeypot: "botcheck" };
+    Object.entries(web3formsFieldNames).forEach(([role, name]) => {
       const field = qs(`[data-role='${role}']`, quoteForm);
       if (field) field.name = name;
     });
     const honeypot = qs("[data-role='honeypot']", quoteForm);
-    if (honeypot) honeypot.type = "checkbox"; // Web3Forms attend une case à cocher
+    if (honeypot) honeypot.type = "checkbox"; // Web3Forms expects a checkbox
     qsa("input[name='_captcha'], input[name='_template']", quoteForm).forEach((field) => field.remove());
     quoteForm.append(Object.assign(document.createElement("input"), {
       type: "hidden", name: "access_key", value: config.web3formsAccessKey || "",
     }));
   };
 
-  /** Le fournisseur d’envoi est-il configuré ? */
+  /**
+   * Tells whether the sending provider is configured.
+   * @param {HTMLFormElement} quoteForm
+   * @returns {boolean}
+   */
   const isFormProviderReady = (quoteForm) => (config.formProvider === "web3forms"
     ? Boolean(config.web3formsAccessKey)
-    : !quoteForm.action.includes("VOTRE-ALIAS"));
+    : !quoteForm.action.includes(formEndpointPlaceholder));
 
   /**
-   * Génère le devis et le place dans le champ fichier caché.
-   * N’échoue jamais : en cas de problème, la demande part sans pièce jointe.
+   * Builds the quote and puts it into the hidden file input.
+   * Never throws: on failure, the request is sent without an attachment.
    * @param {HTMLFormElement} quoteForm
-   * @returns {Promise<boolean>} true si le devis est joint
+   * @returns {Promise<boolean>} true when the quote is attached
    */
   const attachQuoteFile = async (quoteForm) => {
     const fileInput = qs("#quoteAttachment", quoteForm);
     if (!fileInput || typeof DataTransfer === "undefined") return false;
-    const read = (name) => (quoteForm.elements.namedItem(name)?.value || "").trim();
 
     try {
       for (const src of quoteScripts) {
-        await loadScript(src);
+        await loadScript(src); // sequential: docxtemplater needs PizZip first
       }
-      const quoteFile = await window.quoteGenerator.createQuoteFile({
-        firstName: read("Prénom"), lastName: read("Nom"), email: read("email"), phone: read("Téléphone"),
-        formula: read("Formule"), travelers: read("Voyageurs"), destination: read("Destination"), period: read("Période"),
-      });
+      const quoteRequest = Object.fromEntries(
+        Object.entries(quoteFieldNames).map(([key, fieldName]) => [key, readFieldValue(quoteForm, fieldName)])
+      );
+      if (!qs("#assistanceOption", quoteForm)?.checked) quoteRequest.assistanceDays = "";
+      const quoteFile = await window.quoteGenerator.createQuoteFile(quoteRequest);
       const transfer = new DataTransfer();
       transfer.items.add(quoteFile);
       fileInput.files = transfer.files;
       return true;
     } catch (error) {
-      console.error("[quoteForm] Devis non généré, envoi sans pièce jointe :", error);
+      console.error("[quoteForm] Quote not generated, sending without attachment:", error);
       return false;
     }
+  };
+
+  /**
+   * Shows the day count only when the WhatsApp assistance option is ticked.
+   * When hidden, the field is disabled: it is neither validated nor sent.
+   * @param {HTMLFormElement} quoteForm
+   */
+  const initAssistanceOption = (quoteForm) => {
+    const optionCheckbox = qs("#assistanceOption", quoteForm);
+    const daysField = qs("#assistanceDaysField", quoteForm);
+    const daysInput = qs("#assistanceDays", quoteForm);
+    if (!optionCheckbox || !daysField || !daysInput) return;
+
+    const syncDaysField = () => {
+      const isSelected = optionCheckbox.checked;
+      optionCheckbox.setAttribute("aria-expanded", String(isSelected));
+      daysField.hidden = !isSelected;
+      daysInput.disabled = !isSelected;
+      daysInput.required = isSelected;
+      if (!isSelected) {
+        daysInput.removeAttribute("aria-invalid");
+        const errorElement = qs(`#${daysInput.id}Error`, quoteForm);
+        if (errorElement) errorElement.textContent = "";
+      }
+    };
+
+    optionCheckbox.addEventListener("change", () => {
+      syncDaysField();
+      if (optionCheckbox.checked) daysInput.focus();
+    });
+    syncDaysField();
   };
 
   const initQuoteForm = () => {
@@ -387,9 +462,10 @@
     const subjectField = qs("[data-role='subject']", quoteForm);
     const validateForm = attachValidation(quoteForm);
 
+    initAssistanceOption(quoteForm);
     configureFormProvider(quoteForm);
 
-    // Retour arrière depuis merci.html (cache du navigateur) : bouton réactivé
+    // Back navigation from /merci (back/forward cache): re-enable the button
     window.addEventListener("pageshow", () => setButtonBusy(submitButton, false));
 
     quoteForm.addEventListener("submit", async (event) => {
@@ -402,26 +478,29 @@
       }
 
       if (!isFormProviderReady(quoteForm)) {
-        console.warn("[siteConfig] Envoi non configuré : renseignez formEndpoint (ou web3formsAccessKey) dans assets/js/config.js.");
+        console.warn("[siteConfig] Sending is not configured: set formEndpoint (or web3formsAccessKey) in assets/js/config.js.");
         setStatus(statusElement, "L’envoi n’est pas disponible pour le moment. Merci de réessayer un peu plus tard.", "error");
         return;
       }
 
       setButtonBusy(submitButton, true, "Envoi de votre demande…");
 
-      // Objet explicite pour Marie : formule et nom du client
-      const read = (name) => (quoteForm.elements.namedItem(name)?.value || "").trim();
-      if (subjectField) subjectField.value = `Demande de devis — ${read("Formule")} — ${read("Prénom")} ${read("Nom")}`;
+      // Explicit subject for Marie: formula and client name
+      if (subjectField) {
+        const formula = readFieldValue(quoteForm, quoteFieldNames.formula);
+        const fullName = `${readFieldValue(quoteForm, quoteFieldNames.firstName)} ${readFieldValue(quoteForm, quoteFieldNames.lastName)}`;
+        subjectField.value = `Demande de devis — ${formula} — ${fullName}`;
+      }
 
       await attachQuoteFile(quoteForm);
 
-      // Envoi classique (multipart) : seul mode qui transporte la pièce jointe
+      // Native multipart submission: the only mode that carries the attachment
       HTMLFormElement.prototype.submit.call(quoteForm);
     });
   };
 
   /* ------------------------------------------------------------------------
-   * 8. Newsletter → liste de contacts Brevo
+   * 8. Newsletter → Brevo contact list
    * --------------------------------------------------------------------- */
   const initNewsletterForm = () => {
     const newsletterForm = qs("#newsletterForm");
@@ -435,7 +514,7 @@
     newsletterForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      // Validation simple (deux champs) : messages dans la zone de statut
+      // Simple two-field validation, reported in the status region
       if (!emailInput.validity.valid) {
         setStatus(statusElement, "Saisissez une adresse e-mail valide, par exemple : nom@domaine.fr.", "error");
         emailInput.focus();
@@ -448,7 +527,7 @@
       }
 
       if (!config.brevoFormUrl) {
-        console.warn("[siteConfig] brevoFormUrl manquante : configurez assets/js/config.js.");
+        console.warn("[siteConfig] brevoFormUrl is missing: configure assets/js/config.js.");
         setStatus(statusElement, "Les inscriptions ouvrent très bientôt.", "error");
         return;
       }
@@ -456,24 +535,24 @@
       setButtonBusy(submitButton, true, "Inscription…");
 
       try {
-        // Point d’entrée AJAX des formulaires Brevo
+        // AJAX endpoint of Brevo forms
         const response = await fetch(`${config.brevoFormUrl}?isAjax=1`, {
           method: "POST",
           body: new FormData(newsletterForm),
         });
         const result = await response.json();
 
-        if (!result.success) throw new Error(result.message || "Inscription refusée");
+        if (!result.success) throw new Error(result.message || "Subscription rejected");
 
         newsletterForm.reset();
         setStatus(statusElement, "C’est noté ! Confirmez votre inscription grâce à l’e-mail que vous allez recevoir.", "success");
       } catch (error) {
-        // Repli : soumission classique dans un nouvel onglet (ex. blocage CORS)
-        console.error("[newsletterForm] Envoi AJAX impossible, repli natif :", error);
+        // Fallback: native submission in a new tab (e.g. CORS blocked)
+        console.error("[newsletterForm] AJAX submission failed, using native fallback:", error);
         newsletterForm.action = config.brevoFormUrl;
         newsletterForm.target = "_blank";
         HTMLFormElement.prototype.submit.call(newsletterForm);
-        setStatus(statusElement, "Finalisez votre inscription dans l’onglet qui vient de s’ouvrir.", "");
+        setStatus(statusElement, "Finalisez votre inscription dans l’onglet qui vient de s’ouvrir.");
       } finally {
         setButtonBusy(submitButton, false);
       }
@@ -481,26 +560,11 @@
   };
 
   /* ------------------------------------------------------------------------
-   * 9. Page de remerciement : message selon l’origine (devis / paiement)
-   * --------------------------------------------------------------------- */
-  const initThankYouPage = () => {
-    const thankYouBlocks = qsa("[data-thank-you]");
-    if (!thankYouBlocks.length) return;
-
-    const thankYouType = new URLSearchParams(window.location.search).get("type") || "devis";
-    const hasMatchingBlock = thankYouBlocks.some((block) => block.dataset.thankYou === thankYouType);
-
-    thankYouBlocks.forEach((block) => {
-      block.hidden = hasMatchingBlock ? block.dataset.thankYou !== thankYouType : block.dataset.thankYou !== "devis";
-    });
-  };
-
-  /* ------------------------------------------------------------------------
-   * 10. Vidéo du hero
+   * 9. Hero video
    * ------------------------------------------------------------------------
-   * Les sources ne sont injectées qu’au besoin : aucun octet de vidéo n’est
-   * téléchargé si l’utilisateur préfère limiter les animations ou ses données.
-   * Dans ce cas, ou si le fichier manque, l’image d’attente reste affichée.
+   * Sources are injected only when needed: no video byte is downloaded when
+   * the visitor prefers reduced motion or reduced data usage. In that case,
+   * or if the file is missing, the poster image stays visible.
    * --------------------------------------------------------------------- */
   const initHeroVideo = () => {
     const heroVideo = qs("#heroVideo");
@@ -508,14 +572,14 @@
     if (!heroVideo || !videoToggle) return;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const prefersSavingData = Boolean(navigator.connection && navigator.connection.saveData);
+    const prefersSavingData = Boolean(navigator.connection?.saveData);
     if (prefersReducedMotion || prefersSavingData) return;
 
     let videoSources = [];
     try {
       videoSources = JSON.parse(heroVideo.dataset.sources || "[]");
     } catch (error) {
-      console.error("[heroVideo] Liste de sources illisible :", error);
+      console.error("[heroVideo] Unreadable source list:", error);
       return;
     }
 
@@ -530,7 +594,7 @@
     let isPausedByUser = false;
 
     /**
-     * Met à jour l’icône et le libellé du bouton.
+     * Updates the toggle icon and accessible label.
      * @param {boolean} isPaused
      */
     const syncToggle = (isPaused) => {
@@ -539,7 +603,7 @@
     };
 
     const playVideo = () => heroVideo.play().catch(() => {
-      /* Lecture refusée (fichier absent, économie d’énergie…) : l’image d’attente reste visible */
+      // Playback refused (missing file, power saving…): the poster stays visible
     });
 
     heroVideo.addEventListener("playing", () => {
@@ -548,8 +612,8 @@
       syncToggle(false);
     }, { once: true });
 
-    // Démarrage différé : une fois la page chargée et le navigateur au repos,
-    // la vidéo ne concurrence jamais le premier affichage (l'image d'attente le couvre)
+    // Deferred start, once the page has loaded and the browser is idle: the
+    // video never competes with the first render (the poster covers it).
     const startVideo = () => {
       heroVideo.load();
       playVideo();
@@ -577,7 +641,7 @@
       syncToggle(isPausedByUser);
     });
 
-    // Pause automatique hors écran (batterie, processeur), reprise au retour
+    // Automatic pause when off screen (battery, CPU), resumed when back
     if ("IntersectionObserver" in window) {
       const visibilityObserver = new IntersectionObserver(([videoEntry]) => {
         if (isPausedByUser) return;
@@ -592,14 +656,13 @@
   };
 
   /* ------------------------------------------------------------------------
-   * 11. Ligne de vol des étapes
+   * 10. Steps flight line
    * ------------------------------------------------------------------------
-   * L’avion fait escale à chaque étape : il décolle d’une pastille, suit un
-   * arc jusqu’à la suivante et s’y pose, puis repart. En vol, il grossit
-   * (altitude) et son ombre s’éloigne ; une traînée corail se dessine derrière
-   * lui. Chaque pastille s’allume à l’atterrissage. Déclenché une seule fois,
-   * à l’arrivée de la section à l’écran.
-   * Sans animation (préférence système) : arcs affichés, pastilles allumées.
+   * The plane stops over at each step: it takes off from a dot, follows an
+   * arc to the next one, lands, then flies on. In flight it grows (altitude)
+   * and its shadow drifts away; a coral trail is drawn behind it. Each dot
+   * lights up on landing. Runs once, when the section comes into view.
+   * With reduced motion: arcs are shown and every dot is lit, no plane.
    * --------------------------------------------------------------------- */
   const initStepsFlight = () => {
     const stepsRoute = qs("#stepsRoute");
@@ -610,10 +673,14 @@
 
     const svgNamespace = "http://www.w3.org/2000/svg";
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const hopDuration = 2000;     // durée d’un vol entre deux étapes (ms)
-    const groundPause = 700;      // escale sur chaque pastille (ms)
 
-    // Calque SVG des trajectoires, glissé sous les pastilles
+    // Timings, in milliseconds
+    const hopDuration = 2000; // one flight between two steps
+    const groundPause = 700; // stopover on each intermediate dot
+    const takeoffDelay = 700; // wait on the first dot before taking off
+    const fadeOutDelay = 1000; // wait on the last dot before the plane fades out
+
+    // SVG layer holding the flight paths, placed under the dots
     const flightLayer = document.createElementNS(svgNamespace, "svg");
     flightLayer.classList.add("steps__flight");
     flightLayer.setAttribute("aria-hidden", "true");
@@ -623,14 +690,15 @@
 
     /** @type {{trail: SVGPathElement, length: number}[]} */
     let hops = [];
-    const trailProgress = new Array(steps.length - 1).fill(0); // 0 → 1 par vol
-    let planeState = null;  // { hopIndex, progress } pendant le vol
+    const trailProgress = new Array(steps.length - 1).fill(0); // 0 → 1 for each hop
+    /** @type {{hopIndex: number, progress: number}|null} Plane position while flying */
+    let planeState = null;
 
     const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
     const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-    /** Centre de chaque pastille, relatif à la route (la pastille est en haut à gauche de l’étape). */
-    const dotCenters = () => {
+    /** Center of each dot, relative to the route (the dot sits at the top left of its step). */
+    const getDotCenters = () => {
       const routeBox = stepsRoute.getBoundingClientRect();
       return steps.map((step) => {
         const stepBox = step.getBoundingClientRect();
@@ -639,6 +707,12 @@
       });
     };
 
+    /**
+     * Appends a path to the flight layer.
+     * @param {string} pathData
+     * @param {string} className
+     * @returns {SVGPathElement}
+     */
     const createPath = (pathData, className) => {
       const path = document.createElementNS(svgNamespace, "path");
       path.setAttribute("d", pathData);
@@ -647,18 +721,42 @@
       return path;
     };
 
-    /** Affiche la portion parcourue de la traînée d’un vol. */
+    /**
+     * Shows the travelled part of a hop's trail.
+     * @param {number} hopIndex
+     */
     const drawTrail = (hopIndex) => {
       const hop = hops[hopIndex];
       if (hop) hop.trail.style.strokeDashoffset = String(hop.length * (1 - trailProgress[hopIndex]));
     };
 
     /**
-     * Trace un arc par vol : vers le haut sur bureau (étapes en ligne),
-     * vers la gauche sur mobile (étapes en colonne, le texte est à droite).
+     * Places the plane on a hop: position on the arc, heading (tangent),
+     * altitude (scale) and drop shadow.
+     * @param {number} hopIndex
+     * @param {number} progress 0 = takeoff, 1 = landing
+     */
+    const placePlane = (hopIndex, progress) => {
+      const { trail, length } = hops[hopIndex];
+      const distance = length * progress;
+      const point = trail.getPointAtLength(distance);
+      const ahead = trail.getPointAtLength(Math.min(length, distance + 1));
+      const behind = trail.getPointAtLength(Math.max(0, distance - 1));
+      const heading = (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI + 90; // the icon points up
+      const altitude = Math.sin(Math.PI * progress);
+      const scale = 0.72 + 0.5 * altitude;
+
+      planeState = { hopIndex, progress };
+      plane.style.transform = `translate(${point.x}px, ${point.y}px) translate(-50%, -50%) rotate(${heading}deg) scale(${scale})`;
+      plane.style.filter = `drop-shadow(0 ${(2 + 9 * altitude).toFixed(1)}px ${(2 + 4 * altitude).toFixed(1)}px rgb(43 7 9 / ${(0.35 - 0.17 * altitude).toFixed(2)}))`;
+    };
+
+    /**
+     * Draws one arc per hop: upwards on desktop (steps in a row), leftwards
+     * on mobile (steps in a column, with the text on the right).
      */
     const buildFlightPaths = () => {
-      const centers = dotCenters();
+      const centers = getDotCenters();
       flightLayer.replaceChildren();
       hops = centers.slice(0, -1).map((from, index) => {
         const to = centers[index + 1];
@@ -681,32 +779,15 @@
     };
 
     /**
-     * Place l’avion sur un vol : position sur l’arc, cap (tangente),
-     * altitude (échelle) et ombre portée.
+     * Animates one full hop between two steps.
      * @param {number} hopIndex
-     * @param {number} progress  0 = décollage, 1 = atterrissage
+     * @returns {Promise<void>}
      */
-    const placePlane = (hopIndex, progress) => {
-      const { trail, length } = hops[hopIndex];
-      const distance = length * progress;
-      const point = trail.getPointAtLength(distance);
-      const ahead = trail.getPointAtLength(Math.min(length, distance + 1));
-      const behind = trail.getPointAtLength(Math.max(0, distance - 1));
-      const heading = (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI + 90; // icône orientée vers le haut
-      const altitude = Math.sin(Math.PI * progress);
-      const scale = 0.72 + 0.5 * altitude;
-
-      planeState = { hopIndex, progress };
-      plane.style.transform = `translate(${point.x}px, ${point.y}px) translate(-50%, -50%) rotate(${heading}deg) scale(${scale})`;
-      plane.style.filter = `drop-shadow(0 ${(2 + 9 * altitude).toFixed(1)}px ${(2 + 4 * altitude).toFixed(1)}px rgba(43, 7, 9, ${(0.35 - 0.17 * altitude).toFixed(2)}))`;
-    };
-
-    /** Un vol complet entre deux étapes. */
     const flyHop = (hopIndex) => new Promise((resolve) => {
       const startTime = performance.now();
       const renderFrame = (now) => {
         const linearProgress = Math.min(1, (now - startTime) / hopDuration);
-        const progress = easeInOutCubic(linearProgress); // accélère au décollage, freine à l’approche
+        const progress = easeInOutCubic(linearProgress); // speeds up on takeoff, slows down on approach
         trailProgress[hopIndex] = progress;
         drawTrail(hopIndex);
         placePlane(hopIndex, progress);
@@ -721,25 +802,25 @@
 
     const reachStep = (step) => step.classList.add("is-reached");
 
-    /** Le voyage complet : escale sur chaque étape, puis l’avion s’efface. */
+    /** The whole journey: a stopover on each step, then the plane fades out. */
     const startJourney = async () => {
       reachStep(steps[0]);
       placePlane(0, 0);
       plane.classList.add("is-visible");
-      await wait(700); // l’avion attend au sol avant le premier décollage
+      await wait(takeoffDelay);
       for (let hopIndex = 0; hopIndex < hops.length; hopIndex += 1) {
         await flyHop(hopIndex);
         reachStep(steps[hopIndex + 1]);
         if (hopIndex < hops.length - 1) await wait(groundPause);
       }
-      await wait(1000);
-      plane.classList.remove("is-visible"); // le numéro de la dernière étape redevient lisible
+      await wait(fadeOutDelay);
+      plane.classList.remove("is-visible"); // the last step number becomes readable again
       planeState = null;
     };
 
     buildFlightPaths();
 
-    // Recalcul des arcs si la mise en page change (rotation d’écran, redimensionnement)
+    // Rebuild the arcs when the layout changes (rotation, resize)
     let resizeFrame = 0;
     window.addEventListener("resize", () => {
       cancelAnimationFrame(resizeFrame);
@@ -754,7 +835,7 @@
     const flightObserver = new IntersectionObserver(([routeEntry]) => {
       if (!routeEntry.isIntersecting) return;
       flightObserver.disconnect();
-      buildFlightPaths(); // mesures à jour (polices chargées, mise en page stable)
+      buildFlightPaths(); // fresh measurements (fonts loaded, layout settled)
       startJourney();
     }, { threshold: 0.45 });
 
@@ -762,13 +843,16 @@
   };
 
   /* ------------------------------------------------------------------------
-   * 12. Initialisation
+   * 11. Footer: current year in the copyright line
    * --------------------------------------------------------------------- */
   const initCurrentYear = () => {
     const yearElement = qs("#currentYear");
     if (yearElement) yearElement.textContent = String(new Date().getFullYear());
   };
 
+  /* ------------------------------------------------------------------------
+   * 12. Bootstrapping
+   * --------------------------------------------------------------------- */
   initCurrentYear();
   initHeaderState();
   initMobileNav();
@@ -776,7 +860,6 @@
   initFormulaPreselect();
   initQuoteForm();
   initNewsletterForm();
-  initThankYouPage();
   initHeroVideo();
   initStepsFlight();
 })();

@@ -1,57 +1,57 @@
 /**
  * ==========================================================================
- * Marie Dream Planner — Configuration des services tiers
+ * Marie Dream Planner — Third-party services configuration
  * --------------------------------------------------------------------------
- * Seul fichier à modifier pour brancher les services (aucun backend requis).
- * ATTENTION : tout ce fichier est public (lisible par n'importe quel visiteur).
- * N'y placez jamais de clé API secrète.
+ * The only file to edit to connect the services (no backend required).
+ * WARNING: this whole file is public (readable by any visitor, and on GitHub).
+ * Never put a secret API key, an email address or an IBAN you want to keep
+ * private in it.
  * ==========================================================================
  */
 
 window.siteConfig = Object.freeze({
   /**
-   * Envoi du formulaire de devis par e-mail, AVEC le devis Word en pièce jointe.
+   * Quote form delivery by email, WITH the Word quote attached.
    *
-   * "formsubmit" (par défaut, gratuit, pièces jointes incluses) :
-   *   endpoint = https://formsubmit.co/ suivi de l'adresse de Marie, ou mieux,
-   *   de l'alias aléatoire fourni par FormSubmit après la première activation
-   *   (il masque l'adresse e-mail dans le code du site).
+   * "formsubmit" (default, free, attachments included):
+   *   formEndpoint = https://formsubmit.co/ followed by the random ALIAS that
+   *   FormSubmit provides once the form is activated (see DEPLOIEMENT.md).
+   *   Never commit the email address itself.
    *
-   * "web3forms" (pièces jointes réservées à l'offre Pro, payante) :
-   *   endpoint = https://api.web3forms.com/submit + web3formsAccessKey.
+   * "web3forms" (attachments require the paid Pro plan):
+   *   formEndpoint = https://api.web3forms.com/submit + web3formsAccessKey.
+   *
+   * Keep formEndpoint identical to the `action` of #quoteForm in index.html
+   * (used when JavaScript is unavailable).
    */
   formProvider: "formsubmit",
-  // Destination des demandes : l’ALIAS FormSubmit de la boîte Gmail de Marie (voir README,
-  // section « Activation »). Ne jamais committer l’adresse e-mail elle-même : ce dépôt est public.
   formEndpoint: "https://formsubmit.co/VOTRE-ALIAS-FORMSUBMIT",
   web3formsAccessKey: "",
 
   /**
-   * Informations de l'émettrice reprises sur chaque devis généré.
-   * Elles sont publiques (déjà visibles dans les mentions légales),
-   * SAUF l'IBAN : s'il est renseigné ici, il devient lisible dans le code
-   * du site. Laissé vide, le devis affiche « à compléter » et Marie
-   * l'ajoute dans Word avant d'envoyer le devis.
+   * Issuer details printed on every generated quote. They are public anyway
+   * (legal notice), EXCEPT the IBAN: leave it empty and the quote shows
+   * « à compléter », so Marie adds it in Word before sending the quote.
+   * Values are visitor-facing, hence in French.
    */
   quoteIssuer: Object.freeze({
-    legalName: "",            // ex. « Marie Dupont EI » (mention EI obligatoire)
-    address: "",              // adresse postale
+    legalName: "Marie BINZ EI", // the "EI" mention is mandatory
+    address: "76 avenue Franklin Roosevelt, 06110 Le Cannet",
     siret: "106 296 882 00017",
-    email: "contact@mariedreamplanner.fr",           // adresse publique (redirigée vers la boîte de Marie)
-    phone: "",
+    email: "contact@mariedreamplanner.fr", // public address, forwarded to Marie's inbox
+    phone: "06 52 96 23 00",
     vatMention: "TVA non applicable, article 293 B du CGI.",
-    mediator: "",             // nom, adresse et site du médiateur de la consommation
-    balanceTerms: "",         // échéance du solde, ex. « à la remise du carnet de voyage »
+    balanceTerms: "à la finalisation du projet, avant l’envoi du carnet de voyage",
     deliveryDelay: "14 jours à compter de l’échange de cadrage",
     validityDays: 30,
-    bankHolder: "",
-    iban: "",                 // voir l'avertissement ci-dessus
-    bic: "",
+    bankHolder: "Marie BINZ",
+    iban: "", // see the warning above
+    bic: "BNPAFRPPXXX",
   }),
 
   /**
-   * Brevo (ex-Sendinblue) : URL d'action du formulaire d'inscription
-   * (Brevo › Contacts › Formulaires › Partager › code HTML, attribut action).
+   * Brevo (formerly Sendinblue): action URL of the signup form
+   * (Brevo › Contacts › Forms › Share › HTML code, `action` attribute).
    */
   brevoFormUrl: "",
 });

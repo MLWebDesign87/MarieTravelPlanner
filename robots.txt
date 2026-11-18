@@ -1,7 +1,7 @@
-# Marie Dream Planner — consignes pour les robots d’indexation
+# Marie Dream Planner — crawler rules
 User-agent: *
 Allow: /
-Disallow: /merci.html
+Disallow: /merci
 Disallow: /assets/documents/
 
 Sitemap: https://www.mariedreamplanner.fr/sitemap.xml

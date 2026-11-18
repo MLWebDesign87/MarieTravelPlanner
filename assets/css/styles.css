@@ -1,40 +1,39 @@
 /* ==========================================================================
-   Marie Dream Planner — Feuille de style principale (v2)
+   Marie Dream Planner — Main stylesheet
    --------------------------------------------------------------------------
-   Convention : BEM (bloc__element--modificateur) pour les classes CSS,
-   camelCase réservé aux identifiants manipulés en JavaScript.
+   Naming: BEM (block__element--modifier) for classes, is-/has- prefixes for
+   states set by JavaScript, camelCase for ids used by JavaScript.
 
-   Direction artistique : le soleil couchant du logo. Sections immersives en
-   grenat nuit (hero, devis, pied de page), sections de lecture claires.
-   Mouvement volontairement rare : une séquence d’entrée dans le hero,
-   l’avion des étapes, le bandeau des continents, et les retours d’interaction.
+   Art direction: the logo's setting sun. Immersive sections in night garnet
+   (hero, quote, footer), light sections for reading. Motion is deliberately
+   rare: the hero intro, the steps plane, the continents marquee, and
+   interaction feedback.
 
-   Sommaire
-   1.  Polices auto-hébergées
+   Contents
+   1.  Self-hosted fonts
    2.  Design tokens
-   3.  Base & reset léger
-   4.  Utilitaires
-   5.  Boutons
-   6.  En-tête & navigation
-   7.  Hero (disque solaire vidéo)
-   8.  Bandeau des continents
-   9.  Sections génériques
-   10. Introduction & répartition des rôles
-   11. Étapes & ligne de vol
-   12. Formules
-   13. À propos
+   3.  Base & light reset
+   4.  Utilities
+   5.  Buttons
+   6.  Header & navigation
+   7.  Hero (video sun disc)
+   8.  Continents marquee
+   9.  Generic sections
+   10. Introduction & split of responsibilities
+   11. Steps & flight line
+   12. Formulas
+   13. About
    14. FAQ
-   15. Devis & formulaires
-   16. Pied de page, newsletter & crédit
-   17. Pages secondaires (légal, CGV, merci, 404)
-   18. Animations & préférences de mouvement
+   15. Quote & forms
+   16. Footer, newsletter & credit
+   17. Secondary pages (legal, terms, thank you, 404)
+   18. Animations & motion preferences
    ========================================================================== */
 
-
-/* 1. Polices auto-hébergées ------------------------------------------------
-   Servies depuis le domaine du site (RGPD), sous-ensemble latin uniquement. */
+/* 1. Self-hosted fonts -----------------------------------------------------
+   Served from the site's own domain (GDPR), Latin subset only. */
 @font-face {
-  font-family: "Gloock";
+  font-family: Gloock;
   src: url("../fonts/gloock-latin-400-normal.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
@@ -43,7 +42,7 @@
 }
 
 @font-face {
-  font-family: "Poppins";
+  font-family: Poppins;
   src: url("../fonts/poppins-latin-400-normal.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
@@ -52,7 +51,7 @@
 }
 
 @font-face {
-  font-family: "Poppins";
+  font-family: Poppins;
   src: url("../fonts/poppins-latin-500-normal.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
@@ -61,7 +60,7 @@
 }
 
 @font-face {
-  font-family: "Poppins";
+  font-family: Poppins;
   src: url("../fonts/poppins-latin-600-normal.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
@@ -69,32 +68,39 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-
 /* 2. Design tokens ---------------------------------------------------------- */
 :root {
-  /* Couleurs : du grenat nuit à la lumière rasante */
-  --color-night: #2b0709;        /* sections immersives, texte principal */
-  --color-night-soft: #3d0b0e;   /* surfaces sur fond nuit */
-  --color-garnet: #7e1416;       /* couleur de marque (fond du logo) */
-  --color-sun: #e8432a;          /* soleil du logo : détails, jauges */
-  --color-coral: #f36f60;        /* dégradé du logo */
-  --color-peach: #fbb79f;        /* lumière basse, texte sur fond nuit */
-  --color-blush: #fce6e0;        /* fonds de section */
-  --color-shell: #fff8f5;        /* fond de page */
-  --color-white: #ffffff;
+  /* Colors: from night garnet to low evening light.
+     The RGB channels are the single source of each brand color, also used
+     for translucent variants, e.g. rgb(var(--rgb-garnet) / 30%). */
+  --rgb-night: 43 7 9;              /* #2b0709 */
+  --rgb-garnet: 126 20 22;          /* #7e1416 */
+  --rgb-coral: 243 111 96;          /* #f36f60 */
+  --rgb-peach: 251 183 159;         /* #fbb79f */
+  --rgb-shell: 255 248 245;         /* #fff8f5 */
+  --rgb-ink-soft: 107 55 52;        /* #6b3734 */
+  --rgb-on-dark-soft: 233 194 184;  /* #e9c2b8 */
+  --color-night: rgb(var(--rgb-night));             /* immersive sections, main text */
+  --color-night-soft: #3d0b0e;                      /* surfaces on night background */
+  --color-garnet: rgb(var(--rgb-garnet));           /* brand color (logo background) */
+  --color-sun: #e8432a;                             /* logo sun: details, gauges */
+  --color-coral: rgb(var(--rgb-coral));             /* logo gradient */
+  --color-peach: rgb(var(--rgb-peach));             /* low light, text on night background */
+  --color-blush: #fce6e0;                           /* section backgrounds */
+  --color-shell: rgb(var(--rgb-shell));             /* page background */
+  --color-white: #fff;
   --color-ink: var(--color-night);
-  --color-ink-soft: #6b3734;     /* texte secondaire (contraste 9:1) */
-  --color-on-dark-soft: #e9c2b8; /* texte secondaire sur fond nuit */
-  --color-line: rgba(126, 20, 22, 0.14);
-  --color-line-light: rgba(255, 248, 245, 0.18);
+  --color-ink-soft: rgb(var(--rgb-ink-soft));       /* secondary text (9:1 contrast) */
+  --color-on-dark-soft: rgb(var(--rgb-on-dark-soft)); /* secondary text on night background */
+  --color-line: rgb(var(--rgb-garnet) / 14%);
+  --color-line-light: rgb(var(--rgb-shell) / 18%);
   --color-success: #2f6b3a;
-
+  --color-error: #b4321c;                           /* darkened sun red: contrast ≥ 4.5:1 on white */
   --gradient-sun: linear-gradient(135deg, var(--color-peach) 0%, var(--color-coral) 100%);
 
-  /* Typographie */
+  /* Typography */
   --font-display: "Gloock", "Georgia", "Times New Roman", serif;
   --font-body: "Poppins", "Segoe UI", system-ui, -apple-system, sans-serif;
-
   --text-sm: 0.875rem;
   --text-base: 1.0625rem;
   --text-lg: 1.1875rem;
@@ -102,24 +108,22 @@
   --text-h2: clamp(2.25rem, 1.4rem + 3vw, 3.75rem);
   --text-h1: clamp(2.75rem, 1.4rem + 4.6vw, 5.25rem);
 
-  /* Espacements, formes, mouvement */
+  /* Spacing, shapes, motion */
   --space-section: clamp(5rem, 3rem + 8vw, 9rem);
   --container-width: 76rem;
   --container-padding: clamp(1.25rem, 4vw, 2.5rem);
-  --radius-media: 1.75rem;        /* photos et grandes surfaces */
+  --radius-media: 1.75rem;        /* photos and large surfaces */
   --radius-card: 1.25rem;
   --radius-field: 0.75rem;
   --radius-pill: 999px;
   --header-height: 4.75rem;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-
   --focus-color: var(--color-garnet);
 
   color-scheme: light;
 }
 
-
-/* 3. Base & reset léger ----------------------------------------------------- */
+/* 3. Base & light reset ----------------------------------------------------- */
 *,
 *::before,
 *::after {
@@ -140,7 +144,7 @@ body {
   font-size: var(--text-base);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizelegibility;
 }
 
 body.is-menu-open {
@@ -192,8 +196,7 @@ a:hover {
   color: var(--color-night);
 }
 
-
-/* 4. Utilitaires ------------------------------------------------------------ */
+/* 4. Utilities -------------------------------------------------------------- */
 .container {
   width: 100%;
   max-width: calc(var(--container-width) + 2 * var(--container-padding));
@@ -230,7 +233,7 @@ a:hover {
   transform: none;
 }
 
-/* Sur fond sombre, l’anneau de focus passe en pêche */
+/* On dark backgrounds, the focus ring turns peach */
 .hero,
 .quote,
 .site-footer,
@@ -239,8 +242,7 @@ a:hover {
   --focus-color: var(--color-peach);
 }
 
-
-/* 5. Boutons ---------------------------------------------------------------- */
+/* 5. Buttons ---------------------------------------------------------------- */
 .button {
   display: inline-flex;
   align-items: center;
@@ -275,28 +277,28 @@ a:hover {
   color: var(--color-white);
 }
 
-/* Bouton « soleil » : dégradé du logo, texte grenat nuit (contraste ≥ 6:1) */
+/* "Sun" button: logo gradient, night garnet text (contrast ≥ 6:1) */
 .button--sun {
   background: var(--gradient-sun);
   color: var(--color-night);
-  box-shadow: 0 0 0 0 rgba(243, 111, 96, 0);
+  box-shadow: 0 0 0 0 rgb(var(--rgb-coral) / 0%);
 }
 
 .button--sun:hover {
   color: var(--color-night);
-  box-shadow: 0 0.5rem 1.75rem -0.5rem rgba(243, 111, 96, 0.75);
+  box-shadow: 0 0.5rem 1.75rem -0.5rem rgb(var(--rgb-coral) / 75%);
   transform: translateY(-1px);
 }
 
 .button--ghost {
-  border-color: rgba(255, 248, 245, 0.5);
+  border-color: rgb(var(--rgb-shell) / 50%);
   background: transparent;
   color: var(--color-shell);
 }
 
 .button--ghost:hover {
   border-color: var(--color-shell);
-  background: rgba(255, 248, 245, 0.08);
+  background: rgb(var(--rgb-shell) / 8%);
   color: var(--color-white);
 }
 
@@ -305,8 +307,7 @@ a:hover {
   opacity: 0.7;
 }
 
-
-/* 6. En-tête & navigation --------------------------------------------------- */
+/* 6. Header & navigation ---------------------------------------------------- */
 .site-header {
   position: fixed;
   inset: 0 0 auto;
@@ -317,17 +318,17 @@ a:hover {
   transition: border-color 0.4s ease;
 }
 
-/* Verre dépoli une fois le hero quitté (état géré en JS).
-   IMPORTANT : l’effet est porté par un pseudo-élément et non par l’en-tête.
-   Un backdrop-filter sur .site-header en ferait le bloc conteneur de ses
-   descendants en position fixed : le menu mobile plein écran serait alors
-   rogné à la hauteur de l’en-tête. */
+/* Frosted glass once the hero is left (state set by JavaScript).
+   IMPORTANT: the effect lives on a pseudo-element, not on the header itself.
+   A backdrop-filter on .site-header would make it the containing block of
+   its position: fixed descendants, and the full-screen mobile menu would be
+   clipped to the header's height. */
 .site-header::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: rgba(43, 7, 9, 0.78);
+  background: rgb(var(--rgb-night) / 78%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   backdrop-filter: blur(14px) saturate(140%);
   opacity: 0;
@@ -380,7 +381,7 @@ a:hover {
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: 0.12em;
-  text-transform: uppercase; /* reprend le lettrage du logo */
+  text-transform: uppercase; /* matches the logo lettering */
   white-space: nowrap;
 }
 
@@ -457,7 +458,7 @@ a:hover {
   width: 1.5rem;
   height: 2px;
   border-radius: 2px;
-  background: currentColor;
+  background: currentcolor;
   transition: transform 0.3s var(--ease-out), background-color 0.2s ease;
 }
 
@@ -526,9 +527,8 @@ a:hover {
   }
 }
 
-
-/* 7. Hero : disque solaire vidéo --------------------------------------------
-   Fond grenat nuit, halo corail derrière le disque, grain photographique léger. */
+/* 7. Hero: video sun disc --------------------------------------------------
+   Night garnet background, coral glow behind the disc, light film grain. */
 .hero {
   position: relative;
   display: flex;
@@ -538,19 +538,19 @@ a:hover {
   overflow: hidden;
   color: var(--color-shell);
   background:
-    radial-gradient(ellipse 55% 60% at 72% 48%, rgba(243, 111, 96, 0.38) 0%, rgba(126, 20, 22, 0.15) 45%, transparent 70%),
+    radial-gradient(ellipse 55% 60% at 72% 48%, rgb(var(--rgb-coral) / 38%) 0%, rgb(var(--rgb-garnet) / 15%) 45%, transparent 70%),
     linear-gradient(180deg, var(--color-night) 0%, #3a0a0d 62%, var(--color-garnet) 100%);
   isolation: isolate;
 }
 
-/* Grain (bruit SVG) : donne de la matière aux aplats */
+/* Grain (SVG noise): gives texture to flat colors */
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-  opacity: 0.06; /* sans mode de fusion : calque statique, peu coûteux à composer */
+  opacity: 0.06; /* no blend mode: a static layer, cheap to composite */
   pointer-events: none;
 }
 
@@ -569,16 +569,16 @@ a:hover {
   letter-spacing: -0.025em;
 }
 
-/* Une ligne visuelle par segment du titre.
-   Pas de masque (overflow: hidden) : une animation saccadée sur mobile, ou
-   Safari, laissait voir des lignes coupées en deux et rognait les jambages. */
+/* One visual line per title segment.
+   No mask (overflow: hidden): a janky animation on mobile, or Safari, showed
+   lines cut in half and clipped descenders. */
 .hero__line {
   display: block;
 }
 
 .hero__line > span {
   display: block;
-  white-space: nowrap; /* une ligne visuelle = une ligne du titre */
+  white-space: nowrap; /* one visual line = one title line */
 }
 
 .hero__lead {
@@ -604,15 +604,15 @@ a:hover {
 
 .hero__disc {
   position: relative;
-  isolation: isolate; /* calque propre : rendu stable de la vidéo pendant l'animation */
+  isolation: isolate; /* own layer: stable video rendering during the animation */
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: 50%;
   background: var(--gradient-sun);
   box-shadow:
-    0 0 0 1px rgba(251, 183, 159, 0.35),
-    0 0 0 0.875rem rgba(251, 183, 159, 0.06),
-    0 0 8rem 1rem rgba(243, 111, 96, 0.35);
+    0 0 0 1px rgb(var(--rgb-peach) / 35%),
+    0 0 0 0.875rem rgb(var(--rgb-peach) / 6%),
+    0 0 8rem 1rem rgb(var(--rgb-coral) / 35%);
 }
 
 .hero__poster,
@@ -622,13 +622,14 @@ a:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Découpe circulaire portée par le média lui-même : fiable dans Safari,
-     où overflow + border-radius du parent ne rogne pas toujours une vidéo animée */
+
+  /* Circular clip carried by the media itself: reliable in Safari, where the
+     parent's overflow + border-radius does not always clip an animated video */
   border-radius: 50%;
   clip-path: circle(50% at 50% 50%);
 }
 
-/* La vidéo apparaît en fondu par-dessus l’image d’attente dès qu’elle joue */
+/* The video fades in over the poster as soon as it plays */
 .hero__video {
   opacity: 0;
   transition: opacity 0.9s ease;
@@ -638,7 +639,7 @@ a:hover {
   opacity: 1;
 }
 
-/* Bouton pause/lecture : obligatoire pour une vidéo qui dure plus de 5 s */
+/* Pause/play button: required for videos lasting more than 5 s (WCAG 2.2.2) */
 .hero__video-toggle {
   position: absolute;
   left: 8%;
@@ -648,9 +649,9 @@ a:hover {
   width: 2.75rem;
   height: 2.75rem;
   padding: 0;
-  border: 1px solid rgba(255, 248, 245, 0.45);
+  border: 1px solid rgb(var(--rgb-shell) / 45%);
   border-radius: 50%;
-  background: rgba(43, 7, 9, 0.55);
+  background: rgb(var(--rgb-night) / 55%);
   color: var(--color-shell);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
@@ -663,15 +664,15 @@ a:hover {
 }
 
 .hero__video-toggle:hover {
-  background: rgba(43, 7, 9, 0.8);
+  background: rgb(var(--rgb-night) / 80%);
 }
 
-/* Icône pause (deux barres) / lecture (triangle) dessinée en CSS */
+/* Pause (two bars) / play (triangle) icon drawn in CSS */
 .hero__video-icon {
   width: 0.75rem;
   height: 0.875rem;
-  border-left: 3px solid currentColor;
-  border-right: 3px solid currentColor;
+  border-left: 3px solid currentcolor;
+  border-right: 3px solid currentcolor;
 }
 
 .hero__video-toggle[data-state="paused"] .hero__video-icon {
@@ -680,7 +681,7 @@ a:hover {
   margin-left: 0.2rem;
   border-top: 0.45rem solid transparent;
   border-bottom: 0.45rem solid transparent;
-  border-left: 0.75rem solid currentColor;
+  border-left: 0.75rem solid currentcolor;
   border-right: 0;
 }
 
@@ -696,7 +697,7 @@ a:hover {
 }
 
 @media (max-width: 56.24em) {
-  /* Sur mobile, le soleil passe au-dessus du titre */
+  /* On mobile, the sun sits above the title */
   .hero__sun {
     order: -1;
     width: min(60vw, 17rem, 34svh);
@@ -707,12 +708,11 @@ a:hover {
   }
 }
 
-
-/* 8. Bandeau des continents (décoratif) ------------------------------------- */
+/* 8. Continents marquee (decorative) ---------------------------------------- */
 .marquee {
   position: relative;
   overflow: hidden;
-  border-top: 1px solid var(--color-line-light); /* la ligne d’horizon */
+  border-top: 1px solid var(--color-line-light); /* the horizon line */
   padding-block: 1.1rem;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
@@ -720,20 +720,20 @@ a:hover {
 
 .marquee__track {
   display: flex;
-  width: max-content; /* contenu dupliqué : un décalage de -50 % boucle sans à-coup */
+  width: max-content; /* duplicated content: a -50% shift loops seamlessly */
   font-family: var(--font-display);
   font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
-  color: rgba(251, 183, 159, 0.75);
+  color: rgb(var(--rgb-peach) / 75%);
 }
 
 .marquee__track span {
   display: inline-flex;
   align-items: center;
   gap: 3rem;
-  padding-right: 3rem; /* espacement porté par chaque élément : 20 unités identiques */
+  padding-right: 3rem; /* spacing carried by each item: 20 identical units */
 }
 
-/* Petit soleil entre deux continents */
+/* Small sun between two continents */
 .marquee__track span::after {
   content: "";
   width: 0.5rem;
@@ -742,8 +742,7 @@ a:hover {
   background: var(--color-sun);
 }
 
-
-/* 9. Sections génériques ---------------------------------------------------- */
+/* 9. Generic sections ------------------------------------------------------- */
 .section {
   padding-block: var(--space-section);
 }
@@ -778,8 +777,7 @@ a:hover {
   margin-top: 1.1em;
 }
 
-
-/* 10. Introduction & répartition des rôles ---------------------------------- */
+/* 10. Introduction & split of responsibilities ------------------------------ */
 .intro__grid {
   display: grid;
   gap: 3rem;
@@ -826,7 +824,7 @@ a:hover {
   padding-left: 1.75rem;
 }
 
-/* Coche dessinée en CSS */
+/* Check mark drawn in CSS */
 .roles__list li::before {
   content: "";
   position: absolute;
@@ -834,8 +832,8 @@ a:hover {
   left: 0.1rem;
   width: 0.7rem;
   height: 0.4rem;
-  border-left: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
+  border-left: 2px solid currentcolor;
+  border-bottom: 2px solid currentcolor;
   transform: rotate(-45deg);
 }
 
@@ -865,35 +863,35 @@ a:hover {
   }
 }
 
-
-/* 11. Étapes & ligne de vol ------------------------------------------------- */
+/* 11. Steps & flight line --------------------------------------------------- */
 .steps {
   background: var(--color-blush);
 }
 
 .steps__route {
   --dot-size: 3.25rem;
+
   position: relative;
   margin-top: 3.5rem;
 }
 
-/* Ligne pointillée droite : affichage de secours sans JavaScript.
-   Avec JavaScript, main.js la remplace par des trajectoires en arc
-   (calque SVG .steps__flight) entre chaque pastille. */
+/* Straight dotted line: fallback without JavaScript.
+   With JavaScript, main.js replaces it with arcs between the dots
+   (SVG layer .steps__flight). */
 .steps__route::before {
   content: "";
   position: absolute;
   top: calc(var(--dot-size) / 2);
   bottom: calc(var(--dot-size) / 2);
   left: calc(var(--dot-size) / 2);
-  border-left: 2px dashed rgba(126, 20, 22, 0.3);
+  border-left: 2px dashed rgb(var(--rgb-garnet) / 30%);
 }
 
 .steps__route.has-flight-path::before {
   display: none;
 }
 
-/* Calque des trajectoires (arcs), sous les pastilles */
+/* Flight paths layer (arcs), under the dots */
 .steps__flight {
   position: absolute;
   inset: 0;
@@ -906,13 +904,13 @@ a:hover {
 
 .steps__flight-dash {
   fill: none;
-  stroke: rgba(126, 20, 22, 0.3);
+  stroke: rgb(var(--rgb-garnet) / 30%);
   stroke-width: 2;
   stroke-dasharray: 2 7;
   stroke-linecap: round;
 }
 
-/* Traînée laissée par l'avion (longueur pilotée par main.js) */
+/* Trail left by the plane (length driven by main.js) */
 .steps__flight-trail {
   fill: none;
   stroke: var(--color-coral);
@@ -920,7 +918,7 @@ a:hover {
   stroke-linecap: round;
 }
 
-/* Avion : position, cap, altitude (échelle) et ombre calculés à chaque image */
+/* Plane: position, heading, altitude (scale) and shadow computed on every frame */
 .steps__plane {
   position: absolute;
   top: 0;
@@ -974,7 +972,7 @@ a:hover {
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-/* Onde d'atterrissage autour de la pastille */
+/* Landing ripple around the dot */
 .step::after {
   content: "";
   position: absolute;
@@ -1009,7 +1007,7 @@ a:hover {
     bottom: auto;
     right: calc(var(--dot-size) / 2);
     border-left: 0;
-    border-top: 2px dashed rgba(126, 20, 22, 0.3);
+    border-top: 2px dashed rgb(var(--rgb-garnet) / 30%);
   }
 
   .steps__list {
@@ -1023,8 +1021,7 @@ a:hover {
   }
 }
 
-
-/* 12. Formules -------------------------------------------------------------- */
+/* 12. Formulas -------------------------------------------------------------- */
 .formulas__grid {
   display: grid;
   gap: 1.75rem;
@@ -1048,12 +1045,12 @@ a:hover {
   background: var(--gradient-sun);
 }
 
-/* Voile chaud en pied de photo : harmonise toute photo avec la palette */
+/* Warm veil at the bottom of the photo: blends any photo into the palette */
 .offer__media::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 55%, rgba(126, 20, 22, 0.28) 100%);
+  background: linear-gradient(180deg, transparent 55%, rgb(var(--rgb-garnet) / 28%) 100%);
   pointer-events: none;
 }
 
@@ -1080,15 +1077,13 @@ a:hover {
   color: var(--color-garnet);
 }
 
-
 .offer__duration {
   margin-top: 0.25rem;
   font-weight: 500;
   color: var(--color-ink-soft);
 }
 
-
-/* Jauge de durée : échelle de 1 à 30 jours, segment = plage couverte */
+/* Duration gauge: 1-to-30-day scale, segment = covered range */
 .offer__range {
   position: relative;
   height: 0.375rem;
@@ -1097,7 +1092,6 @@ a:hover {
   background: var(--color-line);
 }
 
-
 .offer__range::before,
 .offer__range::after {
   position: absolute;
@@ -1105,7 +1099,6 @@ a:hover {
   font-size: 0.75rem;
   color: var(--color-ink-soft);
 }
-
 
 .offer__range::before {
   content: "1 j";
@@ -1125,10 +1118,21 @@ a:hover {
   background: linear-gradient(90deg, var(--color-coral), var(--color-sun));
 }
 
-/* (jours − 1) / 29 : 2-4 j, 5-15 j, 15-30 j */
-.offer__range--short .offer__range-fill { left: 3.45%; width: 6.9%; }
-.offer__range--medium .offer__range-fill { left: 13.8%; width: 34.5%; }
-.offer__range--long .offer__range-fill { left: 48.3%; width: 51.7%; }
+/* (days − 1) / 29: 2–4 days, 5–15 days, 15–30 days */
+.offer__range--short .offer__range-fill {
+  left: 3.45%;
+  width: 6.9%;
+}
+
+.offer__range--medium .offer__range-fill {
+  left: 13.8%;
+  width: 34.5%;
+}
+
+.offer__range--long .offer__range-fill {
+  left: 48.3%;
+  width: 51.7%;
+}
 
 .offer__features {
   display: grid;
@@ -1143,6 +1147,7 @@ a:hover {
   padding-left: 1.5rem;
 }
 
+/* stylelint-disable-next-line no-descending-specificity -- different BEM block from .roles__list, never the same element */
 .offer__features li::before {
   content: "";
   position: absolute;
@@ -1170,12 +1175,31 @@ a:hover {
   color: var(--color-garnet);
 }
 
-
 .offer__extra {
   font-size: var(--text-sm);
   color: var(--color-ink-soft);
 }
 
+/* Optional add-on, shown under the price */
+.offer__option {
+  margin-top: 0.75rem;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+}
+
+.offer__option-tag {
+  display: inline-block;
+  margin-right: 0.35rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-blush);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-garnet);
+}
 
 .offer__cta {
   width: 100%;
@@ -1200,17 +1224,16 @@ a:hover {
 }
 
 @media (min-width: 56.25em) {
-  /* Trois cartes identiques, de même hauteur : prix et boutons alignés */
+  /* Three identical cards of equal height: prices and buttons aligned */
   .formulas__grid {
     grid-template-columns: repeat(3, 1fr);
     align-items: stretch;
   }
 }
 
-
-/* 13. À propos -------------------------------------------------------------- */
+/* 13. About ----------------------------------------------------------------- */
 .about {
-  overflow: hidden; /* le soleil décoratif du portrait peut déborder */
+  overflow: hidden; /* the portrait's decorative sun may overflow */
   overflow: clip;
   background: var(--color-blush);
 }
@@ -1239,6 +1262,7 @@ a:hover {
   background: linear-gradient(180deg, var(--color-coral) 0%, var(--color-sun) 100%);
 }
 
+/* stylelint-disable-next-line no-descending-specificity -- different BEM block from .offer__media, never the same element */
 .about__portrait img {
   position: relative;
   width: 100%;
@@ -1268,7 +1292,6 @@ a:hover {
   }
 }
 
-
 /* 14. FAQ ------------------------------------------------------------------- */
 .faq__grid {
   display: grid;
@@ -1297,7 +1320,7 @@ a:hover {
   display: none;
 }
 
-/* Pastille + / − */
+/* + / − badge */
 .faq__question::before {
   content: "";
   position: absolute;
@@ -1319,8 +1342,8 @@ a:hover {
   width: 0.75rem;
   height: 0.75rem;
   background:
-    linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat,
-    linear-gradient(currentColor, currentColor) center / 2px 100% no-repeat;
+    linear-gradient(currentcolor, currentcolor) center / 100% 2px no-repeat,
+    linear-gradient(currentcolor, currentcolor) center / 2px 100% no-repeat;
   color: var(--color-garnet);
   transform: translateY(-50%);
   transition: transform 0.35s var(--ease-out);
@@ -1345,7 +1368,7 @@ a:hover {
   color: var(--color-ink-soft);
 }
 
-/* Ouverture animée (navigateurs compatibles ; les autres s’ouvrent instantanément) */
+/* Animated opening (supporting browsers; others open instantly) */
 @supports (interpolate-size: allow-keywords) {
   .faq__item {
     interpolate-size: allow-keywords;
@@ -1375,12 +1398,11 @@ a:hover {
   }
 }
 
-
-/* 15. Devis & formulaires --------------------------------------------------- */
+/* 15. Quote & forms --------------------------------------------------------- */
 .quote {
   position: relative;
   background:
-    radial-gradient(ellipse 50% 60% at 15% 20%, rgba(243, 111, 96, 0.22), transparent 70%),
+    radial-gradient(ellipse 50% 60% at 15% 20%, rgb(var(--rgb-coral) / 22%), transparent 70%),
     var(--color-night);
   color: var(--color-shell);
 }
@@ -1406,13 +1428,14 @@ a:hover {
 
 .form {
   --focus-color: var(--color-garnet);
+
   display: grid;
   gap: 1.25rem;
   padding: clamp(1.5rem, 4vw, 2.75rem);
   border-radius: var(--radius-media);
   background: var(--color-white);
   color: var(--color-ink);
-  box-shadow: 0 2rem 5rem -2rem rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2rem 5rem -2rem rgb(0 0 0 / 50%);
 }
 
 .form__row {
@@ -1431,6 +1454,25 @@ a:hover {
   font-weight: 500;
 }
 
+/* Optional add-on group (WhatsApp assistance) */
+.form__option {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  margin: 0;
+  padding: 1rem 1.25rem 1.25rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-field);
+}
+
+.form__option-legend {
+  padding: 0 0.4rem;
+}
+
+.form__option-days[hidden] {
+  display: none;
+}
+
 .form__optional {
   font-weight: 400;
   color: var(--color-ink-soft);
@@ -1441,21 +1483,21 @@ a:hover {
   min-width: 0;
   min-height: 3rem;
   padding: 0.7rem 0.9rem;
-  border: 1px solid rgba(43, 7, 9, 0.24);
+  border: 1px solid rgb(var(--rgb-night) / 24%);
   border-radius: var(--radius-field);
   background: var(--color-shell);
   color: var(--color-ink);
   font: inherit;
-  font-size: 1rem; /* ≥ 16px : pas de zoom automatique sur iOS */
+  font-size: 1rem; /* ≥ 16px: prevents automatic zoom on iOS */
   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form__input::placeholder {
-  color: rgba(107, 55, 52, 0.7);
+  color: rgb(var(--rgb-ink-soft) / 70%);
 }
 
 .form__input:hover {
-  border-color: rgba(43, 7, 9, 0.45);
+  border-color: rgb(var(--rgb-night) / 45%);
 }
 
 .form__input:focus-visible {
@@ -1488,10 +1530,6 @@ a:hover {
   align-items: start;
 }
 
-.form__field--checkbox .form__error {
-  grid-column: 2;
-}
-
 .form__checkbox {
   width: 1.25rem;
   height: 1.25rem;
@@ -1508,12 +1546,11 @@ a:hover {
 .form__error {
   font-size: var(--text-sm);
   font-weight: 500;
-  color: #b4321c; /* rouge soleil assombri : contraste ≥ 4,5:1 sur blanc */
+  color: var(--color-error);
 }
 
-.form__error:empty,
-.form__status:empty {
-  display: none;
+.form__field--checkbox .form__error {
+  grid-column: 2;
 }
 
 .form__submit {
@@ -1529,7 +1566,13 @@ a:hover {
 }
 
 .form__status[data-status="error"] {
-  color: #b4321c;
+  color: var(--color-error);
+}
+
+/* Empty message regions take no space */
+.form__error:empty,
+.form__status:empty {
+  display: none;
 }
 
 .form__honeypot {
@@ -1559,8 +1602,7 @@ a:hover {
   }
 }
 
-
-/* 16. Pied de page, newsletter & crédit ------------------------------------- */
+/* 16. Footer, newsletter & credit ------------------------------------------- */
 .site-footer {
   padding-block: clamp(3.5rem, 7vw, 5.5rem) 1.75rem;
   border-top: 1px solid var(--color-line-light);
@@ -1601,9 +1643,9 @@ a:hover {
   display: flex;
   max-width: 30rem;
   padding: 0.3rem;
-  border: 1px solid rgba(255, 248, 245, 0.35);
+  border: 1px solid rgb(var(--rgb-shell) / 35%);
   border-radius: var(--radius-pill);
-  background: rgba(255, 248, 245, 0.06);
+  background: rgb(var(--rgb-shell) / 6%);
   transition: border-color 0.2s ease;
 }
 
@@ -1623,11 +1665,11 @@ a:hover {
 }
 
 .newsletter__input::placeholder {
-  color: rgba(233, 194, 184, 0.8);
+  color: rgb(var(--rgb-on-dark-soft) / 80%);
 }
 
 .newsletter__input:focus-visible {
-  outline: none; /* l’anneau est porté par .newsletter__field:focus-within */
+  outline: none; /* the ring is drawn by .newsletter__field:focus-within */
 }
 
 .newsletter__submit {
@@ -1684,6 +1726,7 @@ a:hover {
   list-style: none;
 }
 
+/* stylelint-disable-next-line no-descending-specificity -- only sets text-decoration; .site-footer a:hover only sets color */
 .site-footer__nav a {
   text-decoration: none;
 }
@@ -1704,7 +1747,7 @@ a:hover {
   font-size: var(--text-sm);
 }
 
-/* Crédit de conception : ML Web Design */
+/* Design credit: ML Web Design */
 .credit {
   display: inline-flex;
   align-items: center;
@@ -1735,8 +1778,7 @@ a.credit:hover .credit__name {
   }
 }
 
-
-/* 17. Pages secondaires ----------------------------------------------------- */
+/* 17. Secondary pages ------------------------------------------------------- */
 .page-simple .site-header {
   background: var(--color-night);
 }
@@ -1767,6 +1809,7 @@ a.credit:hover .credit__name {
   font-weight: 600;
 }
 
+/* stylelint-disable-next-line no-descending-specificity -- .legal (legal pages) and .prose (home page) never share a page */
 .legal p,
 .legal ul {
   margin-top: 0.75rem;
@@ -1840,7 +1883,7 @@ a.credit:hover .credit__name {
   margin: 0 auto 2rem;
   border-radius: 50%;
   background: linear-gradient(180deg, var(--color-coral) 0%, var(--color-sun) 100%);
-  box-shadow: 0 0 4rem rgba(243, 111, 96, 0.45);
+  box-shadow: 0 0 4rem rgb(var(--rgb-coral) / 45%);
 }
 
 .page-centered__text {
@@ -1859,17 +1902,16 @@ a.credit:hover .credit__name {
   }
 }
 
-
 /* 18. Animations ------------------------------------------------------------
-   Toutes conditionnées à « prefers-reduced-motion: no-preference ».
-   Les animations du hero sont 100 % CSS (aucun clignotement en attendant le JS) ;
-   seule la ligne de vol des étapes est déclenchée par main.js. */
+   All gated behind "prefers-reduced-motion: no-preference".
+   Hero animations are pure CSS (no flash while waiting for JavaScript);
+   only the steps flight is driven by main.js. */
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
   }
 
-  /* Hero : le titre monte ligne par ligne, puis le soleil se lève */
+  /* Hero: the title rises line by line, then the sun rises */
   .hero__line > span {
     animation: lineRise 0.9s var(--ease-out) both;
   }
@@ -1891,7 +1933,7 @@ a.credit:hover .credit__name {
     animation: fadeIn 1.2s ease 0.9s both;
   }
 
-  /* Bandeau : défilement lent et continu, en pause au survol */
+  /* Marquee: slow continuous scroll, paused on hover */
   .marquee__track {
     animation: marqueeScroll 48s linear infinite;
   }
@@ -1900,13 +1942,13 @@ a.credit:hover .credit__name {
     animation-play-state: paused;
   }
 
-  /* Étapes : onde à l’atterrissage de l’avion (vol piloté par main.js) */
+  /* Steps: ripple when the plane lands (flight driven by main.js) */
   .step.is-reached::after {
     animation: dotRipple 0.8s ease-out;
   }
 }
 
-/* Sans animation : les pastilles sont directement pleines */
+/* Without animation: the dots are filled straight away */
 @media (prefers-reduced-motion: reduce) {
   .step::before {
     background: var(--color-garnet);
@@ -1914,21 +1956,42 @@ a.credit:hover .credit__name {
   }
 }
 
-/* Fondu + légère montée : à tout instant, la ligne reste entière */
+/* Fade + slight rise: the line stays whole at every moment */
 @keyframes lineRise {
-  from { opacity: 0; transform: translateY(0.4em); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(1rem); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Translation seule (sans changement d'échelle) : moins coûteux pendant le démarrage de la vidéo */
+/* Translation only (no scaling): cheaper while the video starts */
 @keyframes sunRise {
-  from { opacity: 0; transform: translateY(12%); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
@@ -1937,8 +2000,15 @@ a.credit:hover .credit__name {
 }
 
 @keyframes dotRipple {
-  from { opacity: 0.9; transform: scale(1); }
-  to { opacity: 0; transform: scale(1.75); }
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.75);
+  }
 }
 
 @keyframes marqueeScroll {

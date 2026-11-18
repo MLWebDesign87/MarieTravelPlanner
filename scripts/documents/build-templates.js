@@ -1,41 +1,45 @@
 /**
- * Marie Dream Planner — Génération du modèle Word du devis
- * ---------------------------------------------------------
- * Produit assets/documents/devis.docx, dont les balises {…} sont remplies
- * dans le navigateur du visiteur (assets/js/quote-generator.js) au moment de
- * l'envoi du formulaire ; le devis part en pièce jointe de l'e-mail à Marie.
+ * Marie Dream Planner — Word quote template generator
+ * ----------------------------------------------------
+ * Writes public/assets/documents/devis.docx. Its {…} placeholders are filled
+ * in the visitor's browser (public/assets/js/quote-generator.js) when the
+ * quote form is submitted; the quote is then attached to the email to Marie.
  *
- * Règle d'or : chaque balise est écrite dans un seul TextRun, pour que Word
- * ne la découpe pas. Si Marie modifie un modèle dans Word, elle doit retaper
- * une balise d'un seul tenant (ou la copier-coller entière).
+ * Golden rule: each placeholder is written in a single TextRun so that Word
+ * never splits it. When editing the template in Word, retype a placeholder in
+ * one go (or paste it whole).
  *
- * Mentions couvertes : identification (dont mention « EI » et SIRET), date et
- * validité, détail du prix, nature de l'opération, mention de TVA, acompte
- * expressément qualifié (et non arrhes, C. conso L214-1), échéance du solde,
- * coordonnées bancaires, droit de rétractation, médiation, acceptation des CGV
- * et demande d'exécution anticipée (C. conso L221-25, L221-28 1°), recueillies
- * par deux cases distinctes.
+ * Legal mentions covered (French consumer law): identification (including the
+ * "EI" mention and SIRET), date and validity, price breakdown, nature of the
+ * service, VAT mention, deposit explicitly qualified as "acompte" and not
+ * "arrhes" (Code de la consommation L214-1), balance due date, bank details,
+ * withdrawal right, acceptance of the terms of sale and request for
+ * early performance (L221-25, L221-28 1°), collected with two separate boxes.
+ *
+ * Usage: node scripts/documents/build-templates.js [output directory]
+ * Requires the "docx" npm package (npm install).
  */
+
 const fs = require("fs");
 const path = require("path");
 const {
-  AlignmentType, BorderStyle, Document, Footer, ImageRun, Packer, Paragraph,
+  AlignmentType, BorderStyle, Document, Footer, ImageRun, Packer, PageNumber, Paragraph,
   ShadingType, Table, TableCell, TableRow, TextRun, VerticalAlign, WidthType,
-  PageNumber, TabStopType,
 } = require("docx");
 
-const outputDir = process.argv[2] || path.join(__dirname, "..", "..", "assets", "documents");
+const outputDir = process.argv[2] || path.join(__dirname, "..", "..", "public", "assets", "documents");
 fs.mkdirSync(outputDir, { recursive: true });
 
-// --- Charte -----------------------------------------------------------------
+// --- Brand ------------------------------------------------------------------
 const color = { garnet: "7E1416", night: "2B0709", soft: "6B3734", line: "E8C9C1", blush: "FCE6E0" };
 const font = { body: "Arial", display: "Georgia" };
-const pageWidth = 11906;            // A4 en DXA
+const pageWidth = 11906; // A4 width, in DXA (1/20 pt)
+const pageHeight = 16838; // A4 height, in DXA
 const margin = 1000;
 const contentWidth = pageWidth - 2 * margin;
-const logo = fs.readFileSync(path.join(__dirname, "..", "..", "assets", "img", "logo-emblem-96.png"));
+const logo = fs.readFileSync(path.join(__dirname, "..", "..", "public", "assets", "img", "logo-emblem-96.png"));
 
-// --- Briques de mise en forme -------------------------------------------------
+// --- Formatting helpers -----------------------------------------------------
 const run = (text, options = {}) => new TextRun({ text, font: font.body, size: 19, color: color.night, ...options });
 const paragraph = (children, options = {}) =>
   new Paragraph({ spacing: { after: 60, line: 276 }, ...options, children: Array.isArray(children) ? children : [children] });
@@ -48,15 +52,10 @@ const sectionTitle = (text) => new Paragraph({
   children: [run(text, { bold: true, size: 20, color: color.garnet })],
 });
 
-const noBorders = {
-  top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" }, bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
-  left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" }, right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
-};
-const lineBorders = {
-  top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" }, left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
-  right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
-  bottom: { style: BorderStyle.SINGLE, size: 4, color: color.line },
-};
+const noBorder = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
+const noBorders = { top: noBorder, bottom: noBorder, left: noBorder, right: noBorder };
+// Single bottom rule (table rows, signature boxes)
+const lineBorders = { ...noBorders, bottom: { style: BorderStyle.SINGLE, size: 4, color: color.line } };
 
 const cell = (children, width, options = {}) => new TableCell({
   width: { size: width, type: WidthType.DXA },
@@ -67,8 +66,8 @@ const cell = (children, width, options = {}) => new TableCell({
   children: Array.isArray(children) ? children : [children],
 });
 
-// En-tête : logo + identité du prestataire (gauche), titre du document (droite)
-function headerBlock(documentTitle, metaLines) {
+// Header: logo and issuer identity (left), document title and details (right)
+const headerBlock = (documentTitle, metaLines) => {
   const leftWidth = Math.round(contentWidth * 0.56);
   const rightWidth = contentWidth - leftWidth;
   return new Table({
@@ -82,7 +81,6 @@ function headerBlock(documentTitle, metaLines) {
         paragraph(run("{companyAddress}")),
         paragraph(run("SIRET : {companySiret}")),
         paragraph(run("{companyEmail}{#companyPhone} — {companyPhone}{/companyPhone}")),
-        paragraph(run("{vatIdentityLine}")),
       ], leftWidth),
       cell([
         new Paragraph({ alignment: AlignmentType.RIGHT, spacing: { after: 120 },
@@ -91,24 +89,22 @@ function headerBlock(documentTitle, metaLines) {
       ], rightWidth),
     ] })],
   });
-}
+};
 
-// Bloc client (cadre rosé)
-function clientBlock() {
-  return new Table({
+// Client block (blush frame)
+const clientBlock = () => new Table({
     width: { size: contentWidth, type: WidthType.DXA },
     columnWidths: [contentWidth],
-    rows: [new TableRow({ children: [cell([
-      paragraph(label("Client")),
-      paragraph(run("{clientName}", { bold: true })),
-      paragraph(run("Adresse : {clientAddress}")),
-      paragraph(run("{clientEmail}{#clientPhone} — {clientPhone}{/clientPhone}")),
-    ], contentWidth, { fill: color.blush })] })],
-  });
-}
+  rows: [new TableRow({ children: [cell([
+    paragraph(label("Client")),
+    paragraph(run("{clientName}", { bold: true })),
+    paragraph(run("Adresse : {clientAddress}")),
+    paragraph(run("{clientEmail}{#clientPhone} — {clientPhone}{/clientPhone}")),
+  ], contentWidth, { fill: color.blush })] })],
+});
 
-// Tableau des prestations : la ligne de données est répétée par docxtemplater
-function linesTable() {
+// Price table: docxtemplater repeats the data row once per quote line
+const linesTable = () => {
   const widths = [Math.round(contentWidth * 0.55), Math.round(contentWidth * 0.1), Math.round(contentWidth * 0.17)];
   widths.push(contentWidth - widths.reduce((a, b) => a + b, 0));
   const headerFill = color.garnet;
@@ -116,7 +112,7 @@ function linesTable() {
     new Paragraph({ alignment: align, children: [run(text, { bold: true, color: "FFFFFF", size: 18 })] }), width, { fill: headerFill });
   const dataCell = (text, width, align) => cell(
     new Paragraph({ alignment: align, children: [run(text)] }), width, { borders: lineBorders });
-  // Les cellules de total fusionnent les colonnes 2 et 3
+  // Total rows span columns 2 and 3
   const mergedTotal = (labelText, valueTag, bold = false) => new TableRow({ children: [
     cell(new Paragraph({ children: [run("")] }), widths[0]),
     new TableCell({ width: { size: widths[1] + widths[2], type: WidthType.DXA }, columnSpan: 2, borders: noBorders,
@@ -140,18 +136,17 @@ function linesTable() {
       mergedTotal("{totalLabel}", "{totalAmount}", true),
     ],
   });
-}
+};
 
-function bankBlock(referenceTag) {
-  return [
-    paragraph([label("Coordonnées bancaires — "), run("Titulaire : {bankHolder}")]),
-    paragraph([run("IBAN : {iban}     BIC : {bic}")]),
-    paragraph([run("Référence à indiquer sur le virement : "), run(referenceTag, { bold: true })]),
-  ];
-}
+// Bank details for the transfer, with the reference to quote
+const bankBlock = (referenceTag) => [
+  paragraph([label("Coordonnées bancaires — "), run("Titulaire : {bankHolder}")]),
+  paragraph([run("IBAN : {iban}     BIC : {bic}")]),
+  paragraph([run("Référence à indiquer sur le virement : "), run(referenceTag, { bold: true })]),
+];
 
-function footer(documentKind) {
-  return new Footer({ children: [new Paragraph({
+// Page footer: issuer, document reference and page number
+const pageFooter = (documentKind) => new Footer({ children: [new Paragraph({
     alignment: AlignmentType.CENTER,
     border: { top: { style: BorderStyle.SINGLE, size: 4, color: color.line, space: 4 } },
     children: [
@@ -159,25 +154,22 @@ function footer(documentKind) {
       new TextRun({ children: [PageNumber.CURRENT], font: font.body, size: 16, color: color.soft }),
     ],
   })] });
-}
 
-function buildDocument(sections) {
-  return new Document({
-    creator: "Marie Dream Planner",
-    styles: { default: { document: { run: { font: font.body, size: 19 } } } },
-    sections: [{
-      properties: { page: { size: { width: pageWidth, height: 16838 }, margin: { top: 900, bottom: 900, left: margin, right: margin } } },
-      footers: { default: sections.footer },
-      children: sections.children,
-    }],
-  });
-}
+const buildDocument = ({ footer, children }) => new Document({
+  creator: "Marie Dream Planner",
+  styles: { default: { document: { run: { font: font.body, size: 19 } } } },
+  sections: [{
+    properties: { page: { size: { width: pageWidth, height: pageHeight }, margin: { top: 900, bottom: 900, left: margin, right: margin } } },
+    footers: { default: footer },
+    children,
+  }],
+});
 
 // ============================================================================
-// DEVIS
+// Quote document (content in French: it is sent to clients)
 // ============================================================================
 const quoteDocument = buildDocument({
-  footer: footer("Devis {quoteNumber}"),
+  footer: pageFooter("Devis {quoteNumber}"),
   children: [
     headerBlock("Devis", [
       [label("N° "), run("{quoteNumber}", { bold: true })],
@@ -205,9 +197,8 @@ const quoteDocument = buildDocument({
     ...bankBlock("{quoteNumber}"),
     paragraph(run("Escompte pour paiement anticipé : néant.")),
 
-    sectionTitle("Droit de rétractation et médiation"),
-    paragraph(run("Contrat conclu à distance : vous disposez de 14 jours à compter de l'acceptation du devis pour vous rétracter, sans motif, au moyen du formulaire joint aux conditions générales de vente ou de toute déclaration dénuée d'ambiguïté. L'acompte vous est alors remboursé, déduction faite, le cas échéant, de la part de prestation déjà réalisée à votre demande expresse.")),
-    paragraph(run("Médiateur de la consommation : {mediator}.")),
+    sectionTitle("Droit de rétractation"),
+    paragraph(run("Contrat conclu à distance : sauf exceptions prévues à l'article L221-28 du Code de la consommation (CGV, article 9), vous disposez de 14 jours à compter de l'acceptation du devis pour vous rétracter, sans motif, au moyen du formulaire joint aux conditions générales de vente ou de toute déclaration dénuée d'ambiguïté. L'acompte vous est alors remboursé, déduction faite, le cas échéant, de la part de prestation déjà réalisée à votre demande expresse.")),
 
     sectionTitle("Bon pour accord"),
     paragraph(run("Pour accepter ce devis, retournez-le daté et signé, puis effectuez le virement de l'acompte.")),
@@ -228,6 +219,7 @@ const quoteDocument = buildDocument({
 });
 
 (async () => {
-  fs.writeFileSync(path.join(outputDir, "devis.docx"), await Packer.toBuffer(quoteDocument));
-  console.log("Modèle généré :", path.join(outputDir, "devis.docx"));
+  const outputFile = path.join(outputDir, "devis.docx");
+  fs.writeFileSync(outputFile, await Packer.toBuffer(quoteDocument));
+  console.log("Template written:", outputFile);
 })();
